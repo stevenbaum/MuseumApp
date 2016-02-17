@@ -10,16 +10,12 @@ var Hello = (props) => (
 	);
 
 // Row within the table, lists a museum image & name
-class ListRow extends React.Component {
-	render () {
-		return (
-			<tr>
-				<td><img src={this.props.museum.imageThumbnail} /></td>
-				<td>{this.props.museum.name}</td>
-			</tr>
-		);
-	}
-}
+var ListRow = (props) => (
+		<tr>
+			<td><img src={props.museum.imageThumbnail} /></td>
+			<td>{props.museum.name}</td>
+		</tr>
+	);
 
 // List of museums, composed of rows
 class MuseumList extends React.Component {

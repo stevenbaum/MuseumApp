@@ -80,43 +80,27 @@
 	};
 	
 	// Row within the table, lists a museum image & name
-	
-	var ListRow = function (_React$Component) {
-		_inherits(ListRow, _React$Component);
-	
-		function ListRow() {
-			_classCallCheck(this, ListRow);
-	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(ListRow).apply(this, arguments));
-		}
-	
-		_createClass(ListRow, [{
-			key: 'render',
-			value: function render() {
-				return _react2.default.createElement(
-					'tr',
-					null,
-					_react2.default.createElement(
-						'td',
-						null,
-						_react2.default.createElement('img', { src: this.props.museum.imageThumbnail })
-					),
-					_react2.default.createElement(
-						'td',
-						null,
-						this.props.museum.name
-					)
-				);
-			}
-		}]);
-	
-		return ListRow;
-	}(_react2.default.Component);
+	var ListRow = function ListRow(props) {
+		return _react2.default.createElement(
+			'tr',
+			null,
+			_react2.default.createElement(
+				'td',
+				null,
+				_react2.default.createElement('img', { src: props.museum.imageThumbnail })
+			),
+			_react2.default.createElement(
+				'td',
+				null,
+				props.museum.name
+			)
+		);
+	};
 	
 	// List of museums, composed of rows
 	
-	var MuseumList = function (_React$Component2) {
-		_inherits(MuseumList, _React$Component2);
+	var MuseumList = function (_React$Component) {
+		_inherits(MuseumList, _React$Component);
 	
 		function MuseumList() {
 			_classCallCheck(this, MuseumList);
@@ -129,6 +113,8 @@
 			value: function render() {
 				var rows = [];
 	
+				// React likes it if array elements (like those that end up in lists/tables)
+				// Each have a unique 'key' prop, which here is just a number
 				var _iteratorNormalCompletion = true;
 				var _didIteratorError = false;
 				var _iteratorError = undefined;
@@ -184,8 +170,8 @@
 	
 	// Filterable list of museums, composed of a list and filtering search bar
 	
-	var FilterList = function (_React$Component3) {
-		_inherits(FilterList, _React$Component3);
+	var FilterList = function (_React$Component2) {
+		_inherits(FilterList, _React$Component2);
 	
 		function FilterList() {
 			_classCallCheck(this, FilterList);
