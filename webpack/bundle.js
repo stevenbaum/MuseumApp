@@ -57,8 +57,6 @@
 	
 	var _reactDom = __webpack_require__(/*! react-dom */ 158);
 	
-	var _museumData = __webpack_require__(/*! ./museumData.js */ 159);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -66,41 +64,99 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
 	// Separate JS file holds a single function, DATA,
 	// that returns an array of objects holding the museum data
+	
+	// PSA - functional components just use props.whatever,
+	// class components use this.props.whatever OR this.state.whatever if there's state constructed,
+	// Don't get them switched or everything explodes
 	
 	var Hello = function Hello(props) {
 		return _react2.default.createElement(
 			'div',
 			null,
-			'Hey, ',
-			props.name,
-			'.'
+			_react2.default.createElement(
+				'div',
+				null,
+				'Hey, ',
+				props.name,
+				'.'
+			),
+			_react2.default.createElement('input', { type: 'button', onClick: changemap, value: 'Click mee' })
 		);
 	};
 	
+	var Helloo = function (_React$Component) {
+		_inherits(Helloo, _React$Component);
+	
+		function Helloo() {
+			_classCallCheck(this, Helloo);
+	
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(Helloo).apply(this, arguments));
+		}
+	
+		_createClass(Helloo, [{
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'div',
+					null,
+					_react2.default.createElement(
+						'p',
+						null,
+						this.props.text
+					)
+				);
+			}
+		}]);
+	
+		return Helloo;
+	}(_react2.default.Component);
+	
 	// Row within the table, lists a museum image & name
-	var ListRow = function ListRow(props) {
-		return _react2.default.createElement(
-			'tr',
-			null,
-			_react2.default.createElement(
-				'td',
-				null,
-				_react2.default.createElement('img', { src: props.museum.imageThumbnail })
-			),
-			_react2.default.createElement(
-				'td',
-				null,
-				props.museum.name
-			)
-		);
-	};
+	// Currently the state for each row holds metadata for that museum
+	// Props is a Google PLace object gathered from mapCalls.js,
+	// Given to React by calling getDetailArray(), API docs show object structure
+	
+	var MuseumRow = function (_React$Component2) {
+		_inherits(MuseumRow, _React$Component2);
+	
+		function MuseumRow(props) {
+			_classCallCheck(this, MuseumRow);
+	
+			var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumRow).call(this, props));
+	
+			_this2.state = {
+				name: props.museum.name
+			};
+			return _this2;
+		}
+	
+		_createClass(MuseumRow, [{
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'tr',
+					null,
+					_react2.default.createElement(
+						'td',
+						null,
+						this.state.name
+					)
+				);
+			}
+		}]);
+	
+		return MuseumRow;
+	}(_react2.default.Component);
+	
+	;
 	
 	// List of museums, composed of rows
 	
-	var MuseumList = function (_React$Component) {
-		_inherits(MuseumList, _React$Component);
+	var MuseumList = function (_React$Component3) {
+		_inherits(MuseumList, _React$Component3);
 	
 		function MuseumList() {
 			_classCallCheck(this, MuseumList);
@@ -123,7 +179,7 @@
 					for (var _iterator = this.props.museums[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var museum = _step.value;
 	
-						rows.push(_react2.default.createElement(ListRow, { key: museum.id, museum: museum }));
+						rows.push(_react2.default.createElement(MuseumRow, { key: museum.id, museum: museum }));
 					}
 				} catch (err) {
 					_didIteratorError = true;
@@ -142,7 +198,7 @@
 	
 				return _react2.default.createElement(
 					'table',
-					null,
+					{ id: 'museumtable' },
 					_react2.default.createElement(
 						'thead',
 						null,
@@ -151,7 +207,7 @@
 							null,
 							_react2.default.createElement(
 								'th',
-								null,
+								{ id: 'tablehead' },
 								'Museum Master List'
 							)
 						)
@@ -169,23 +225,116 @@
 	}(_react2.default.Component);
 	
 	// Filterable list of museums, composed of a list and filtering search bar
+	// Run Maps Init here
 	
-	var FilterList = function (_React$Component2) {
-		_inherits(FilterList, _React$Component2);
+	var FilterList = function (_React$Component4) {
+		_inherits(FilterList, _React$Component4);
 	
-		function FilterList() {
+		function FilterList(props) {
 			_classCallCheck(this, FilterList);
 	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(FilterList).apply(this, arguments));
+			var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(FilterList).call(this, props));
+	
+			_this4.state = {
+				//Array of Places, w/o details though
+				museums: []
+			};
+			return _this4;
 		}
 	
+		// For AJAX use componentDidMount and put request in here,
+		// Will trigger render when request arrives
+	
 		_createClass(FilterList, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this5 = this;
+	
+				console.log("mount");
+				// Call a nearby Search for Places (museums) in radius around Trafalgar Sq.
+				// Order the results by prominence, then go to callback function
+				// Callback function populates array with place_ids from each Place found
+				// (places, status, pagination) => is the callback function; uses arrow to bind this.state
+				// to the 'this' of the class, rather than the 'this' of the callback function
+				var trafalgarSquare = { lat: 51.5081, lng: -0.1281 };
+				var service = new google.maps.places.PlacesService(map);
+				var placeResults = [];
+				service.nearbySearch({
+					location: trafalgarSquare,
+					radius: 4000,
+					type: ['museum'],
+					rankBy: google.maps.places.RankBy.PROMINENCE
+				}, function (places, status, pagination) {
+					if (status === google.maps.places.PlacesServiceStatus.OK) {
+						var _iteratorNormalCompletion2 = true;
+						var _didIteratorError2 = false;
+						var _iteratorError2 = undefined;
+	
+						try {
+							for (var _iterator2 = places[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+								var place = _step2.value;
+	
+								placeResults.push(place);
+							}
+							// Get next 20 places, must be gathered as separate call to .nextPage() per api specs
+						} catch (err) {
+							_didIteratorError2 = true;
+							_iteratorError2 = err;
+						} finally {
+							try {
+								if (!_iteratorNormalCompletion2 && _iterator2.return) {
+									_iterator2.return();
+								}
+							} finally {
+								if (_didIteratorError2) {
+									throw _iteratorError2;
+								}
+							}
+						}
+	
+						var nextResults;
+	
+						if (pagination.hasNextPage) {
+							nextResults = pagination.nextPage();
+							var _iteratorNormalCompletion3 = true;
+							var _didIteratorError3 = false;
+							var _iteratorError3 = undefined;
+	
+							try {
+								for (var _iterator3 = nextResults[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+									var place = _step3.value;
+	
+									placeResults.push(place);
+								}
+							} catch (err) {
+								_didIteratorError3 = true;
+								_iteratorError3 = err;
+							} finally {
+								try {
+									if (!_iteratorNormalCompletion3 && _iterator3.return) {
+										_iterator3.return();
+									}
+								} finally {
+									if (_didIteratorError3) {
+										throw _iteratorError3;
+									}
+								}
+							}
+						}
+						// setState tells React state has changed, updates UI accordingly
+						_this5.setState({ museums: placeResults });
+					} else {
+						console.log("Error in nearbySearch - Filterlist");
+					}
+				});
+			}
+		}, {
 			key: 'render',
 			value: function render() {
 				return _react2.default.createElement(
 					'div',
 					null,
-					_react2.default.createElement(MuseumList, { museums: this.props.museumData })
+					_react2.default.createElement(MuseumList, { museums: this.state.museums })
 				);
 			}
 		}]);
@@ -194,9 +343,12 @@
 	}(_react2.default.Component);
 	
 	var helloName = "Compputer";
+	var txt = "textextext";
+	var museumObjects = getPlaceArray();
 	
 	(0, _reactDom.render)(_react2.default.createElement(Hello, { name: helloName }), document.getElementById('hello'));
-	(0, _reactDom.render)(_react2.default.createElement(MuseumList, { museums: (0, _museumData.DATA)() }), document.getElementById('museumlist'));
+	(0, _reactDom.render)(_react2.default.createElement(Helloo, { text: txt }), document.getElementById('helloo'));
+	(0, _reactDom.render)(_react2.default.createElement(FilterList, null), document.getElementById('filterlist'));
 
 /***/ },
 /* 1 */
@@ -20272,63 +20424,6 @@
 	
 	module.exports = __webpack_require__(/*! react/lib/ReactDOM */ 3);
 
-
-/***/ },
-/* 159 */
-/*!******************************!*\
-  !*** ./app/js/museumData.js ***!
-  \******************************/
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.DATA = DATA;
-	function DATA() {
-		return [{
-			name: "The British Museum",
-			genre: "History",
-			id: 1
-		}, {
-			name: "The National Gallery",
-			genre: "Art",
-			id: 2
-		}, {
-			name: "The National Portrait Gallery",
-			genre: "Art",
-			id: 3
-		}, {
-			name: "Tate Modern",
-			genre: "Art",
-			id: 4
-		}, {
-			name: "The Museum of London",
-			genre: "History",
-			id: 5
-		}, {
-			name: "The Imperial War Museum",
-			genre: "History",
-			id: 6
-		}, {
-			name: "The Museum of Natural History",
-			genre: "Science",
-			id: 7
-		}, {
-			name: "The London Science Museum",
-			genre: "Science, History",
-			id: 8
-		}, {
-			name: "The London Transport Museum",
-			genre: "History, Art, Science",
-			id: 9
-		}, {
-			name: "The Victoria and Albert Museum",
-			genre: "History",
-			id: 10
-		}];
-	}
 
 /***/ }
 /******/ ]);
