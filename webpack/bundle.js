@@ -115,22 +115,15 @@
 	}(_react2.default.Component);
 	
 	// Row within the table, lists a museum image & name
-	// Currently the state for each row holds metadata for that museum
-	// Props is a Google PLace object gathered from mapCalls.js,
-	// Given to React by calling getDetailArray(), API docs show object structure
+	// Props is a Google PLace object (fields available in API)
 	
 	var MuseumRow = function (_React$Component2) {
 		_inherits(MuseumRow, _React$Component2);
 	
-		function MuseumRow(props) {
+		function MuseumRow() {
 			_classCallCheck(this, MuseumRow);
 	
-			var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumRow).call(this, props));
-	
-			_this2.state = {
-				name: props.museum.name
-			};
-			return _this2;
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumRow).apply(this, arguments));
 		}
 	
 		_createClass(MuseumRow, [{
@@ -142,7 +135,7 @@
 					_react2.default.createElement(
 						'td',
 						null,
-						this.state.name
+						this.props.museum.name
 					)
 				);
 			}
@@ -224,31 +217,157 @@
 		return MuseumList;
 	}(_react2.default.Component);
 	
-	// Filterable list of museums, composed of a list and filtering search bar
-	// Run Maps Init here
+	var MuseumFilters = function (_React$Component4) {
+		_inherits(MuseumFilters, _React$Component4);
 	
-	var FilterList = function (_React$Component4) {
-		_inherits(FilterList, _React$Component4);
+		function MuseumFilters() {
+			_classCallCheck(this, MuseumFilters);
 	
-		function FilterList(props) {
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumFilters).apply(this, arguments));
+		}
+	
+		_createClass(MuseumFilters, [{
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement('div', null);
+			}
+		}]);
+	
+		return MuseumFilters;
+	}(_react2.default.Component);
+	
+	var FilterList = function (_React$Component5) {
+		_inherits(FilterList, _React$Component5);
+	
+		function FilterList() {
 			_classCallCheck(this, FilterList);
 	
-			var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(FilterList).call(this, props));
+			return _possibleConstructorReturn(this, Object.getPrototypeOf(FilterList).apply(this, arguments));
+		}
 	
-			_this4.state = {
-				//Array of Places, w/o details though
-				museums: []
+		_createClass(FilterList, [{
+			key: 'render',
+			value: function render() {
+	
+				return _react2.default.createElement(
+					'div',
+					null,
+					_react2.default.createElement(MuseumList, { museums: this.props.museums })
+				);
+			}
+		}]);
+	
+		return FilterList;
+	}(_react2.default.Component);
+	
+	// Primary window for displaying a museum's information
+	// Props is an activeMuseum, determined by clicking on a table item
+	
+	var InfoWindow = function (_React$Component6) {
+		_inherits(InfoWindow, _React$Component6);
+	
+		// Need state to trigger renders when callback for getDetails finally arrives
+	
+		function InfoWindow(props) {
+			_classCallCheck(this, InfoWindow);
+	
+			var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(InfoWindow).call(this, props));
+	
+			_this6.state = {
+				name: "temp",
+				website: null,
+				price: null,
+				rating: null,
+				photos: null,
+				hours: 5
 			};
-			return _this4;
+			return _this6;
+		}
+	
+		_createClass(InfoWindow, [{
+			key: 'render',
+			value: function render() {
+				var _this7 = this;
+	
+				// Make API call here to get Details
+				// Invariant: Render only happens when state of MuseumApp changes,
+				// which always changes the activeMuseum field, so call is always appropriate
+				var place_id;
+				var name = "tempp";
+	
+				if (this.props.activeMuseum !== null) {
+					name = this.props.activeMuseum.name;
+					place_id = this.props.activeMuseum.place_id;
+					var request = {
+						placeId: place_id
+					};
+	
+					var service = new google.maps.places.PlacesService(map);
+					service.getDetails(request, function (place, status) {
+						if (status === google.maps.places.PlacesServiceStatus.OK) {
+							_this7.setState({
+								website: place.website,
+								hours: 6
+							});
+						};
+					});
+				}
+	
+				return _react2.default.createElement(
+					'div',
+					null,
+					_react2.default.createElement(
+						'a',
+						{ href: this.state.website },
+						'Go to site'
+					),
+					_react2.default.createElement(
+						'p',
+						null,
+						'Hours = ',
+						this.state.hours
+					),
+					_react2.default.createElement(
+						'p',
+						null,
+						'Name = ',
+						name
+					)
+				);
+			}
+		}]);
+	
+		return InfoWindow;
+	}(_react2.default.Component);
+	
+	// Top component for app; propagates to all others, gathers museum data
+	// Has 2 children: InfoWindow & FilterList
+	// Run Maps Init here
+	
+	var MuseumApp = function (_React$Component7) {
+		_inherits(MuseumApp, _React$Component7);
+	
+		function MuseumApp(props) {
+			_classCallCheck(this, MuseumApp);
+	
+			var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumApp).call(this, props));
+	
+			_this8.state = {
+				//Array of Places, w/o details though
+				museums: [],
+				activeMuseum: null,
+				wikiChart: null
+			};
+			return _this8;
 		}
 	
 		// For AJAX use componentDidMount and put request in here,
 		// Will trigger render when request arrives
 	
-		_createClass(FilterList, [{
+		_createClass(MuseumApp, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				var _this5 = this;
+				var _this9 = this;
 	
 				console.log("mount");
 				// Call a nearby Search for Places (museums) in radius around Trafalgar Sq.
@@ -322,33 +441,52 @@
 							}
 						}
 						// setState tells React state has changed, updates UI accordingly
-						_this5.setState({ museums: placeResults });
+						_this9.setState({ museums: placeResults, activeMuseum: placeResults[0] });
 					} else {
 						console.log("Error in nearbySearch - Filterlist");
 					}
 				});
+	
+				// Use HTTP request for MediaWiki to pull List of London Museums for museum categorization
+				var httpRequest = new XMLHttpRequest();
+	
+				httpRequest.open('GET', url);
+				httpRequest.setRequestHeader('Api-User-Agent', 'stevenmichaelbaum/1.0');
+				httpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
+				var url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=List%20of%20museums%20in%20London";
+				var wikiText = "empty";
+	
+				httpRequest.onreadystatechange = function () {
+					if (httpRequest.readyState === XMLHttpRequest.DONE) {
+						if (httpRequest.status === 200) {
+							wikiText = httpRequest.responseText;
+						}
+					}
+				};
+				httpRequest.send();
 			}
 		}, {
 			key: 'render',
 			value: function render() {
+	
 				return _react2.default.createElement(
 					'div',
 					null,
-					_react2.default.createElement(MuseumList, { museums: this.state.museums })
+					_react2.default.createElement(InfoWindow, { activeMuseum: this.state.activeMuseum }),
+					_react2.default.createElement(FilterList, { museums: this.state.museums })
 				);
 			}
 		}]);
 	
-		return FilterList;
+		return MuseumApp;
 	}(_react2.default.Component);
 	
 	var helloName = "Compputer";
 	var txt = "textextext";
-	var museumObjects = getPlaceArray();
 	
 	(0, _reactDom.render)(_react2.default.createElement(Hello, { name: helloName }), document.getElementById('hello'));
 	(0, _reactDom.render)(_react2.default.createElement(Helloo, { text: txt }), document.getElementById('helloo'));
-	(0, _reactDom.render)(_react2.default.createElement(FilterList, null), document.getElementById('filterlist'));
+	(0, _reactDom.render)(_react2.default.createElement(MuseumApp, null), document.getElementById('museumapp'));
 
 /***/ },
 /* 1 */

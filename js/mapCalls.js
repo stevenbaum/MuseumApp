@@ -2,7 +2,7 @@
 
 var map;
 var infowindow;
-var placesNoDetails = [];
+var placeIDs = [];
 var placeDetails = [];
 
 function changemap() {
@@ -33,19 +33,21 @@ function initMap() {
   var service = new google.maps.places.PlacesService(map);
   service.nearbySearch({
     location: trafalgarSquare,
-    radius: 4000,
-    type: ['museum'],
+    radius: 3000,
+    types: ['museum'],
     rankBy: google.maps.places.RankBy.PROMINENCE,
   }, initCallback);
 
+  // Use array of place_ids to get details on each place
+  // Put placeDetail objects into their own array
+  makePlaceDetails(placeIDs);
 }
 
-// Callback from nearbySearch; returns an array of Places
 function initCallback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
-      // Collect Place objects in an array
-      placesNoDetails.push(results[i]);
+      // Collect place ID's from results of nearbySearch
+      placeIDs.push(results[i].place_id);
       createMarker(results[i]);
     }
   }
@@ -53,17 +55,17 @@ function initCallback(results, status) {
 
 // With array of Place IDs gathered from nearbySearch Callback, 
 // make requests to Places API to get Array of Place Detail objects
-// ***NOTE***
-// You can't call .getDetails too many times in succession or it overloads,
-// Needs to be called as a click event for each museum item
-function makePlaceDetails(id) {
+function makePlaceDetails(idList) {
   var detailService = new google.maps.places.PlacesService(map);
-  var request = {
-    placeId: id,
-  };
+  var request;
+  for (var i = 0; i < idList.length; i++) {
+    request = {
+      placeId: idList[i]
+    };
 
-  // Put each placeDetail in placeDetail array
-  detailService.getDetails(request, detailCallback);
+    // Put each placeDetail in placeDetail array
+    detailService.getDetails(request, detailCallback);
+  };
 }
 
 // Callback for makePlaceDetails; should return a single
@@ -76,15 +78,8 @@ function detailCallback(place, status) {
   };
 }
 
-// Return array of PlaceDetails gathered by makePlaceDetails
 function getDetailArray() {
   return placeDetails;
-}
-
-// Return array of Places, but not with Details
-// Must call makePlaceDetails with the .place_id from Places in this array
-function getPlaceArray() {
-  return placesNoDetails;
 }
 
 function createMarker(place) {

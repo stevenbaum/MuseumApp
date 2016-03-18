@@ -15,7 +15,7 @@ var Hello = (props) => (
 	);
 
 class Helloo extends React.Component {
-	render () {
+	render() {
 		return (
 			<div>
 				<p>{this.props.text}</p>
@@ -25,21 +25,13 @@ class Helloo extends React.Component {
 }
 
 // Row within the table, lists a museum image & name
-// Currently the state for each row holds metadata for that museum
-// Props is a Google PLace object gathered from mapCalls.js,
-// Given to React by calling getDetailArray(), API docs show object structure
+// Props is a Google PLace object (fields available in API)
 class MuseumRow extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			name: props.museum.name,
-		}
-	}
 
-	render () {
+	render() {
 		return (
 			<tr>
-				<td>{this.state.name}</td>
+				<td>{this.props.museum.name}</td>
 			</tr>
 		);
 	}
@@ -47,7 +39,7 @@ class MuseumRow extends React.Component {
 
 // List of museums, composed of rows
 class MuseumList extends React.Component {
-	render () {
+	render() {
 		let rows = [];
 
 		// React likes it if array elements (like those that end up in lists/tables)
@@ -68,14 +60,93 @@ class MuseumList extends React.Component {
 	}
 }
 
-// Filterable list of museums, composed of a list and filtering search bar
-// Run Maps Init here
+class MuseumFilters extends React.Component {
+
+	render() {
+		return (
+			<div>
+
+			</div>
+		);
+	}
+}
+
 class FilterList extends React.Component {
+
+	render() {
+
+		return (
+			<div>
+				<MuseumList museums={this.props.museums} />
+			</div>
+		);
+	}
+}
+
+// Primary window for displaying a museum's information
+// Props is an activeMuseum, determined by clicking on a table item
+class InfoWindow extends React.Component {
+
+	// Need state to trigger renders when callback for getDetails finally arrives
+	constructor(props) {
+		super(props);
+		this.state = {
+			name: "temp",
+			website: null,
+			price: null,
+			rating: null,
+			photos: null,
+			hours: 5,
+		}
+	}
+
+	render() {
+		// Make API call here to get Details
+		// Invariant: Render only happens when state of MuseumApp changes,
+		// which always changes the activeMuseum field, so call is always appropriate
+		var place_id;
+		var name = "tempp";
+
+		if (this.props.activeMuseum !== null) {
+			name = this.props.activeMuseum.name;
+			place_id = this.props.activeMuseum.place_id;
+			var request = {
+				placeId: place_id
+			};
+
+			var service = new google.maps.places.PlacesService(map);
+			service.getDetails(request,
+				(place, status) => {
+					if (status === google.maps.places.PlacesServiceStatus.OK) {
+						this.setState({
+							website: place.website,
+							hours: 6
+						});
+					};
+				});
+		}
+
+		return (
+			<div>
+				<a href={this.state.website}>Go to site</a>
+				<p>Hours = {this.state.hours}</p>
+				<p>Name = {name}</p>
+			</div>
+		);
+	}
+}
+
+// Top component for app; propagates to all others, gathers museum data
+// Has 2 children: InfoWindow & FilterList
+// Run Maps Init here
+class MuseumApp extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			//Array of Places, w/o details though
 			museums: [],
+			activeMuseum: null,
+			wikiChart: null,
 		}
 	}
 
@@ -112,17 +183,37 @@ class FilterList extends React.Component {
 						}
 					}
 					// setState tells React state has changed, updates UI accordingly
-					this.setState({museums: placeResults});
+					this.setState({museums: placeResults, activeMuseum: placeResults[0]});
 				} else {
 						console.log("Error in nearbySearch - Filterlist");
 				}
 			});
+
+		// Use HTTP request for MediaWiki to pull List of London Museums for museum categorization
+		var httpRequest = new XMLHttpRequest();
+
+		httpRequest.open('GET', url);
+		httpRequest.setRequestHeader( 'Api-User-Agent', 'stevenmichaelbaum/1.0' );
+		httpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
+		var url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=List%20of%20museums%20in%20London";
+		var wikiText = "empty";
+
+		httpRequest.onreadystatechange = function () {
+			if (httpRequest.readyState === XMLHttpRequest.DONE) {
+				if (httpRequest.status === 200) {
+					wikiText = httpRequest.responseText;
+				}
+			}
+		};
+		httpRequest.send();
 	}
 
-	render () {
+	render() {
+
 		return (
 			<div>
-				<MuseumList museums={this.state.museums} />
+				<InfoWindow activeMuseum={this.state.activeMuseum} />
+				<FilterList museums={this.state.museums} />
 			</div>
 		);
 	}
@@ -130,8 +221,7 @@ class FilterList extends React.Component {
 
 let helloName = "Compputer";
 let txt = "textextext";
-let museumObjects = getPlaceArray();
 
 render(<Hello name={helloName} />, document.getElementById('hello'));
 render(<Helloo text={txt} />, document.getElementById('helloo'));
-render(<FilterList />, document.getElementById('filterlist'));
+render(<MuseumApp />, document.getElementById('museumapp'));
