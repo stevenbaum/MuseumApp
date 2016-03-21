@@ -65,60 +65,23 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	// Separate JS file holds a single function, DATA,
-	// that returns an array of objects holding the museum data
-	
 	// PSA - functional components just use props.whatever,
 	// class components use this.props.whatever OR this.state.whatever if there's state constructed,
 	// Don't get them switched or everything explodes
 	
-	var Hello = function Hello(props) {
-		return _react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(
-				'div',
-				null,
-				'Hey, ',
-				props.name,
-				'.'
-			),
-			_react2.default.createElement('input', { type: 'button', onClick: changemap, value: 'Click mee' })
-		);
-	};
-	
-	var Helloo = function (_React$Component) {
-		_inherits(Helloo, _React$Component);
-	
-		function Helloo() {
-			_classCallCheck(this, Helloo);
-	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(Helloo).apply(this, arguments));
-		}
-	
-		_createClass(Helloo, [{
-			key: 'render',
-			value: function render() {
-				return _react2.default.createElement(
-					'div',
-					null,
-					_react2.default.createElement(
-						'p',
-						null,
-						this.props.text
-					)
-				);
-			}
-		}]);
-	
-		return Helloo;
-	}(_react2.default.Component);
+	// Functional Component Structure
+	/*var Hello = (props) => (
+		<div>
+			<div>Hey, {props.name}.</div>
+			<input type="button" onClick={changemap} value="Click mee" />
+		</div>
+	);*/
 	
 	// Row within the table, lists a museum image & name
 	// Props is a Google PLace object (fields available in API)
 	
-	var MuseumRow = function (_React$Component2) {
-		_inherits(MuseumRow, _React$Component2);
+	var MuseumRow = function (_React$Component) {
+		_inherits(MuseumRow, _React$Component);
 	
 		function MuseumRow() {
 			_classCallCheck(this, MuseumRow);
@@ -148,8 +111,8 @@
 	
 	// List of museums, composed of rows
 	
-	var MuseumList = function (_React$Component3) {
-		_inherits(MuseumList, _React$Component3);
+	var MuseumList = function (_React$Component2) {
+		_inherits(MuseumList, _React$Component2);
 	
 		function MuseumList() {
 			_classCallCheck(this, MuseumList);
@@ -217,8 +180,8 @@
 		return MuseumList;
 	}(_react2.default.Component);
 	
-	var MuseumFilters = function (_React$Component4) {
-		_inherits(MuseumFilters, _React$Component4);
+	var MuseumFilters = function (_React$Component3) {
+		_inherits(MuseumFilters, _React$Component3);
 	
 		function MuseumFilters() {
 			_classCallCheck(this, MuseumFilters);
@@ -236,8 +199,8 @@
 		return MuseumFilters;
 	}(_react2.default.Component);
 	
-	var FilterList = function (_React$Component5) {
-		_inherits(FilterList, _React$Component5);
+	var FilterList = function (_React$Component4) {
+		_inherits(FilterList, _React$Component4);
 	
 		function FilterList() {
 			_classCallCheck(this, FilterList);
@@ -263,17 +226,17 @@
 	// Primary window for displaying a museum's information
 	// Props is an activeMuseum, determined by clicking on a table item
 	
-	var InfoWindow = function (_React$Component6) {
-		_inherits(InfoWindow, _React$Component6);
+	var InfoWindow = function (_React$Component5) {
+		_inherits(InfoWindow, _React$Component5);
 	
 		// Need state to trigger renders when callback for getDetails finally arrives
 	
 		function InfoWindow(props) {
 			_classCallCheck(this, InfoWindow);
 	
-			var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(InfoWindow).call(this, props));
+			var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(InfoWindow).call(this, props));
 	
-			_this6.state = {
+			_this5.state = {
 				name: "temp",
 				website: null,
 				price: null,
@@ -281,13 +244,13 @@
 				photos: null,
 				hours: 5
 			};
-			return _this6;
+			return _this5;
 		}
 	
 		_createClass(InfoWindow, [{
 			key: 'render',
 			value: function render() {
-				var _this7 = this;
+				var _this6 = this;
 	
 				// Make API call here to get Details
 				// Invariant: Render only happens when state of MuseumApp changes,
@@ -305,7 +268,7 @@
 					var service = new google.maps.places.PlacesService(map);
 					service.getDetails(request, function (place, status) {
 						if (status === google.maps.places.PlacesServiceStatus.OK) {
-							_this7.setState({
+							_this6.setState({
 								website: place.website,
 								hours: 6
 							});
@@ -344,21 +307,21 @@
 	// Has 2 children: InfoWindow & FilterList
 	// Run Maps Init here
 	
-	var MuseumApp = function (_React$Component7) {
-		_inherits(MuseumApp, _React$Component7);
+	var MuseumApp = function (_React$Component6) {
+		_inherits(MuseumApp, _React$Component6);
 	
 		function MuseumApp(props) {
 			_classCallCheck(this, MuseumApp);
 	
-			var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumApp).call(this, props));
+			var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(MuseumApp).call(this, props));
 	
-			_this8.state = {
+			_this7.state = {
 				//Array of Places, w/o details though
 				museums: [],
 				activeMuseum: null,
-				wikiChart: null
+				wikiText: null
 			};
-			return _this8;
+			return _this7;
 		}
 	
 		// For AJAX use componentDidMount and put request in here,
@@ -367,7 +330,7 @@
 		_createClass(MuseumApp, [{
 			key: 'componentDidMount',
 			value: function componentDidMount() {
-				var _this9 = this;
+				var _this8 = this;
 	
 				console.log("mount");
 				// Call a nearby Search for Places (museums) in radius around Trafalgar Sq.
@@ -441,29 +404,118 @@
 							}
 						}
 						// setState tells React state has changed, updates UI accordingly
-						_this9.setState({ museums: placeResults, activeMuseum: placeResults[0] });
+						_this8.setState({ museums: placeResults, activeMuseum: placeResults[0] });
+						// If Wiki AJAX has already completed, use museum list & wiki data to assign categories
+						if (_this8.state.wikiText !== null) {
+							_this8.assignCategories();
+						}
 					} else {
 						console.log("Error in nearbySearch - Filterlist");
 					}
 				});
 	
-				// Use HTTP request for MediaWiki to pull List of London Museums for museum categorization
-				var httpRequest = new XMLHttpRequest();
+				// Use HTTP request via jQuery $.ajax for MediaWiki to pull List of London Museums for museum categorization
+				$.ajax({
+					type: "GET",
+					url: "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&callback=?&rvprop=content&format=json&titles=List%20of%20museums%20in%20London",
+					dataType: 'jsonp',
+					jsonp: 'callback',
+					headers: { 'Api-User-Agent': 'stevenMuseumApp' },
+					xhrFields: { withCredentials: true },
+					app: this,
+					success: function success(data) {
+						var page = data.query.pages;
+						var pageKey = Object.keys(page)[0];
+						var text = page[pageKey].revisions[0]["*"];
+						this.app.setState({ wikiText: text });
 	
-				httpRequest.open('GET', url);
-				httpRequest.setRequestHeader('Api-User-Agent', 'stevenmichaelbaum/1.0');
-				httpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
-				var url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=List%20of%20museums%20in%20London";
-				var wikiText = "empty";
-	
-				httpRequest.onreadystatechange = function () {
-					if (httpRequest.readyState === XMLHttpRequest.DONE) {
-						if (httpRequest.status === 200) {
-							wikiText = httpRequest.responseText;
+						// If Google Places has already populated museums, assign categories
+						if (this.app.state.museums.length > 0) {
+							this.app.assignCategories();
 						}
 					}
-				};
-				httpRequest.send();
+				});
+			}
+	
+			// Iterate over each museum, check its name against the Wiki table, grab category from text
+			// This should only be called when both the museum array and wikiText are received from their AJAX calls
+	
+		}, {
+			key: 'assignCategories',
+			value: function assignCategories() {
+				var categorizedMuseums = [];
+				var _iteratorNormalCompletion4 = true;
+				var _didIteratorError4 = false;
+				var _iteratorError4 = undefined;
+	
+				try {
+					for (var _iterator4 = this.state.museums[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+						var museum = _step4.value;
+	
+						var museumReplace = museum;
+						var name = museum.name;
+						// Edge cases; Google Places that don't match with wiki Table
+						if (name === "Golden Hinde II") {
+							name = "Golden Hinde";
+						} else if (name === "Shakespeare's Globe") {
+							name = 'Shakespeare’s Globe Exhibition';
+						} else if (name === "Handel and Hendrix in London") {
+							name = "Handel House Museum";
+						} else if (name === "Spencer House Ltd") {
+							name = "Spencer House";
+						} else if (name === "Museum of the Order of Saint John") {
+							name = "Museum of the Order of St John";
+						} else if (name === "Science Museum" || name === "Imperial War Museum") {
+							name = "-\n! [[" + name;
+						}
+						// Wiki omits "The -----" from start of museum name, do the same with Places name
+						if (name[0] === "T" && name[1] === "h" && name[2] === "e" && name[3] === " ") {
+							name = name.substr(4);
+						}
+						// Find museum within doc; search for name, and the category is 4 slots ('||') after
+						var index = this.state.wikiText.indexOf(name);
+						var count = 0;
+						var letter = '';
+						if (index !== -1) {
+							while (count < 4) {
+								if (this.state.wikiText[index] === '|' && this.state.wikiText[index + 1] === '|') {
+									count += 1;
+									index += 1;
+								}
+								index += 1;
+							}
+							var hitNextBar = false;
+							var category = '';
+							// Collect string until next '||', this should be the || (category) ||
+							while (hitNextBar === false) {
+								if (this.state.wikiText[index] === '|' && this.state.wikiText[index + 1] === '|') {
+									hitNextBar = true;
+								} else {
+									category += this.state.wikiText[index];
+									index += 1;
+								}
+							}
+							category = category.trim();
+							museumReplace['category'] = category;
+							categorizedMuseums.push(museumReplace);
+						}
+					}
+				} catch (err) {
+					_didIteratorError4 = true;
+					_iteratorError4 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion4 && _iterator4.return) {
+							_iterator4.return();
+						}
+					} finally {
+						if (_didIteratorError4) {
+							throw _iteratorError4;
+						}
+					}
+				}
+	
+				this.setState({ museums: categorizedMuseums });
 			}
 		}, {
 			key: 'render',
@@ -481,12 +533,16 @@
 		return MuseumApp;
 	}(_react2.default.Component);
 	
-	var helloName = "Compputer";
-	var txt = "textextext";
-	
-	(0, _reactDom.render)(_react2.default.createElement(Hello, { name: helloName }), document.getElementById('hello'));
-	(0, _reactDom.render)(_react2.default.createElement(Helloo, { text: txt }), document.getElementById('helloo'));
 	(0, _reactDom.render)(_react2.default.createElement(MuseumApp, null), document.getElementById('museumapp'));
+	
+	// Manual Grouping of categories by keywords from Wiki
+	var categories = {
+		history: ['history', 'historic house', 'ethnic', 'multiple', 'living', 'biographical', 'archaeology', 'numismatic', 'library', 'multiple', 'prison', 'gardening'],
+		art: ['art', 'contemporary art', 'design', 'fashion'],
+		media: ['media', 'film', 'cinema', 'theatre', 'theater', 'comedy', 'magic', 'music', 'sports', 'wax'],
+		military: ['war', 'military', 'maritime', 'aviation'],
+		science: ['science', 'technology', 'transportation', 'natural history', 'medical']
+	};
 
 /***/ },
 /* 1 */

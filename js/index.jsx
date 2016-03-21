@@ -1,28 +1,17 @@
 import React from 'react';
 import {render} from 'react-dom';
-// Separate JS file holds a single function, DATA,
-// that returns an array of objects holding the museum data
 
 // PSA - functional components just use props.whatever,
 // class components use this.props.whatever OR this.state.whatever if there's state constructed,
 // Don't get them switched or everything explodes
 
-var Hello = (props) => (
+// Functional Component Structure
+/*var Hello = (props) => (
 	<div>
 		<div>Hey, {props.name}.</div>
 		<input type="button" onClick={changemap} value="Click mee" />
 	</div>
-	);
-
-class Helloo extends React.Component {
-	render() {
-		return (
-			<div>
-				<p>{this.props.text}</p>
-			</div>
-		);
-	}
-}
+);*/
 
 // Row within the table, lists a museum image & name
 // Props is a Google PLace object (fields available in API)
@@ -146,7 +135,7 @@ class MuseumApp extends React.Component {
 			//Array of Places, w/o details though
 			museums: [],
 			activeMuseum: null,
-			wikiChart: null,
+			wikiText: null,
 		}
 	}
 
@@ -184,28 +173,96 @@ class MuseumApp extends React.Component {
 					}
 					// setState tells React state has changed, updates UI accordingly
 					this.setState({museums: placeResults, activeMuseum: placeResults[0]});
+					// If Wiki AJAX has already completed, use museum list & wiki data to assign categories
+					if (this.state.wikiText !== null) {
+						this.assignCategories();
+					}
 				} else {
 						console.log("Error in nearbySearch - Filterlist");
 				}
 			});
 
-		// Use HTTP request for MediaWiki to pull List of London Museums for museum categorization
-		var httpRequest = new XMLHttpRequest();
+		// Use HTTP request via jQuery $.ajax for MediaWiki to pull List of London Museums for museum categorization
+		$.ajax({
+			type: "GET",
+			url: "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&callback=?&rvprop=content&format=json&titles=List%20of%20museums%20in%20London",
+			dataType: 'jsonp',
+			jsonp: 'callback',
+			headers: { 'Api-User-Agent': 'stevenMuseumApp' },
+			xhrFields: { withCredentials: true },
+			app: this,
+			success: function(data) {
+				var page = data.query.pages;
+				var pageKey = Object.keys(page)[0];
+				var text = page[pageKey].revisions[0]["*"];
+				this.app.setState({wikiText: text});
 
-		httpRequest.open('GET', url);
-		httpRequest.setRequestHeader( 'Api-User-Agent', 'stevenmichaelbaum/1.0' );
-		httpRequest.setRequestHeader('Access-Control-Allow-Origin', '*');
-		var url = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&titles=List%20of%20museums%20in%20London";
-		var wikiText = "empty";
-
-		httpRequest.onreadystatechange = function () {
-			if (httpRequest.readyState === XMLHttpRequest.DONE) {
-				if (httpRequest.status === 200) {
-					wikiText = httpRequest.responseText;
+				// If Google Places has already populated museums, assign categories
+				if (this.app.state.museums.length > 0) {
+					this.app.assignCategories();
 				}
 			}
-		};
-		httpRequest.send();
+		});
+	}
+
+	// Iterate over each museum, check its name against the Wiki table, grab category from text
+	// This should only be called when both the museum array and wikiText are received from their AJAX calls
+	assignCategories() {
+		var categorizedMuseums = [];
+		for (var museum of this.state.museums) {
+			var museumReplace = museum;
+			var name = museum.name
+			// Edge cases; Google Places that don't match with wiki Table
+			if (name === "Golden Hinde II") {
+				name = "Golden Hinde";
+			} else if (name === "Shakespeare's Globe"){
+				name = "Shakespeare\u2019s Globe Exhibition";
+			} else if (name === "Handel and Hendrix in London") {
+				name = "Handel House Museum";
+			} else if (name === "Spencer House Ltd") {
+				name = "Spencer House";
+			} else if (name === "Museum of the Order of Saint John") {
+				name = "Museum of the Order of St John";
+			} else if (name === "Science Museum" || name === "Imperial War Museum") {
+				name = "-\n! [[" + name;
+			}
+			// Wiki omits "The -----" from start of museum name, do the same with Places name
+			if (name[0] === "T" &&
+				name[1] === "h" &&
+				name[2] === "e" &&
+				name[3] === " ") 
+			{
+				name = name.substr(4);
+			}
+			// Find museum within doc; search for name, and the category is 4 slots ('||') after
+			var index = this.state.wikiText.indexOf(name);
+			var count = 0;
+			var letter = '';
+			if (index !== -1) {
+				while (count < 4) {
+					if (this.state.wikiText[index] === '|' && this.state.wikiText[index+1] === '|') {
+						count += 1;
+						index += 1;
+					}
+					index += 1;
+				}
+				var hitNextBar = false;
+				var category = '';
+				// Collect string until next '||', this should be the || (category) ||
+				while (hitNextBar === false) {
+					if (this.state.wikiText[index] === '|' && this.state.wikiText[index+1] === '|') {
+						hitNextBar = true;
+					} else {
+						category += this.state.wikiText[index];
+						index += 1;
+					}
+				}
+				category = category.trim();
+				museumReplace['category'] = category;
+				categorizedMuseums.push(museumReplace);
+			}
+		}
+		this.setState({museums: categorizedMuseums});
 	}
 
 	render() {
@@ -219,9 +276,13 @@ class MuseumApp extends React.Component {
 	}
 }
 
-let helloName = "Compputer";
-let txt = "textextext";
-
-render(<Hello name={helloName} />, document.getElementById('hello'));
-render(<Helloo text={txt} />, document.getElementById('helloo'));
 render(<MuseumApp />, document.getElementById('museumapp'));
+
+// Manual Grouping of categories by keywords from Wiki
+var categories = {
+	history: ['history', 'historic house', 'ethnic', 'multiple', 'living', 'biographical', 'archaeology', 'numismatic', 'library', 'multiple', 'prison', 'gardening'],
+	art: ['art', 'contemporary art', 'design', 'fashion'],
+	media: ['media', 'film', 'cinema', 'theatre', 'theater', 'comedy', 'magic', 'music', 'sports', 'wax'],
+	military: ['war', 'military', 'maritime', 'aviation', ],
+	science: ['science', 'technology', 'transportation', 'natural history', 'medical']
+};
