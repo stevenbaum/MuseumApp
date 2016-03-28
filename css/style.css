@@ -2,9 +2,25 @@ html, body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	background-color: #edf1f2;
+}
+
+#menuHistory:hover,
+#menuArt:hover,
+#menuMedia:hover,
+#menuTop:hover,
+#menuMilitary:hover,
+#menuScience:hover,
+td:hover {
+	cursor: pointer;
 }
 
 #map {
 	height: 50%;
 	width: 50%;
+}
+
+#activemap {
+	height: 400px;
+	width: 600px;
 }
