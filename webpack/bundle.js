@@ -65,15 +65,13 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	// PSA - functional components just use props.whatever,
-	// class components use this.props.whatever OR this.state.whatever if there's state constructed,
-	// Don't get them switched or everything explodes
+	// Self PSA - functional components just use props.whatever,
+	// class components use this.props.whatever OR this.state.whatever if there's state constructed
 	
 	// Functional Component Structure
 	/*var Hello = (props) => (
 		<div>
 			<div>Hey, {props.name}.</div>
-			<input type="button" onclick={changemap} value="Click mee" />
 		</div>
 	);*/
 	
@@ -98,11 +96,12 @@
 			key: 'render',
 			value: function render() {
 				return _react2.default.createElement(
-					'tr',
-					null,
+					'div',
+					{ id: 'card', onClick: this.selectMuseum.bind(this, this.props.museum) },
+					_react2.default.createElement('img', { id: 'tablethumbnail', src: this.props.museum.googlephoto }),
 					_react2.default.createElement(
-						'td',
-						{ onClick: this.selectMuseum.bind(this, this.props.museum) },
+						'h5',
+						null,
 						this.props.museum.name
 					)
 				);
@@ -128,7 +127,7 @@
 		_createClass(MuseumList, [{
 			key: 'render',
 			value: function render() {
-				var rows = [];
+				var cards = [];
 	
 				// React likes it if array elements (like those that end up in lists/tables)
 				// Each have a unique 'key' prop, which here is just a number
@@ -140,8 +139,8 @@
 					for (var _iterator = this.props.museums[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var museum = _step.value;
 	
-						if (museum.category === this.props.category || this.props.category === "Top5" && museum['top5']) {
-							rows.push(_react2.default.createElement(MuseumRow, { handleClick: this.props.handleClick.bind(this), key: museum.id, museum: museum }));
+						if (museum.category === this.props.category || this.props.category === "Top Five" && museum['top5']) {
+							cards.push(_react2.default.createElement(MuseumRow, { handleClick: this.props.handleClick.bind(this), key: museum.id, museum: museum }));
 						}
 					}
 				} catch (err) {
@@ -160,25 +159,18 @@
 				}
 	
 				return _react2.default.createElement(
-					'table',
-					{ id: 'museumtable' },
+					'div',
+					null,
 					_react2.default.createElement(
-						'thead',
-						null,
-						_react2.default.createElement(
-							'tr',
-							null,
-							_react2.default.createElement(
-								'th',
-								{ id: 'tablehead' },
-								'Museum Master List'
-							)
-						)
+						'h2',
+						{ id: 'tablehead' },
+						this.props.category,
+						' Museums'
 					),
 					_react2.default.createElement(
-						'tbody',
-						null,
-						rows
+						'div',
+						{ id: 'cardlist' },
+						cards
 					)
 				);
 			}
@@ -186,6 +178,8 @@
 	
 		return MuseumList;
 	}(_react2.default.Component);
+	
+	// TODO: Add in filters once category has been established: 'open now', 'free', etc.
 	
 	var MuseumFilters = function (_React$Component3) {
 		_inherits(MuseumFilters, _React$Component3);
@@ -206,6 +200,8 @@
 		return MuseumFilters;
 	}(_react2.default.Component);
 	
+	// List of museums with toggle-able filters above, only shows those of selected category
+	
 	var FilterList = function (_React$Component4) {
 		_inherits(FilterList, _React$Component4);
 	
@@ -220,7 +216,7 @@
 			value: function render() {
 				return _react2.default.createElement(
 					'div',
-					null,
+					{ id: 'museumtable' },
 					_react2.default.createElement(MuseumList, { handleClick: this.props.handleClick.bind(this), category: this.props.category, museums: this.props.museums })
 				);
 			}
@@ -228,6 +224,8 @@
 	
 		return FilterList;
 	}(_react2.default.Component);
+	
+	// Google Maps map
 	
 	var ActiveMap = function (_React$Component5) {
 		_inherits(ActiveMap, _React$Component5);
@@ -269,7 +267,11 @@
 						position: this.props.markerLocation
 					});
 				}
-				return _react2.default.createElement('div', { ref: 'mapnode', id: 'activemap' });
+				return _react2.default.createElement(
+					'div',
+					{ id: 'mapwrapper' },
+					_react2.default.createElement('div', { ref: 'mapnode', id: 'activemap' })
+				);
 			}
 		}]);
 	
@@ -294,6 +296,7 @@
 			value: function render() {
 				var lat = 51.5081;
 				var lng = -0.1281;
+				var picurl = "";
 				var markerLocation = { lat: 0, lng: 0 };
 				if (typeof this.props.activeInfo.coordinates !== 'undefined') {
 					lat = this.props.activeInfo.coordinates.lat;
@@ -301,24 +304,32 @@
 					markerLocation = this.props.activeInfo.markerLocation;
 				}
 	
+				if (this.props.activeMuseum !== null) {
+					picurl = this.props.activeMuseum.googlephoto;
+				}
+	
 				return _react2.default.createElement(
 					'div',
-					{ id: 'infoBox' },
-					_react2.default.createElement(ActiveMap, { lat: lat, lng: lng, markerLocation: markerLocation }),
+					{ id: 'infowindow' },
+					_react2.default.createElement(
+						'h1',
+						null,
+						this.props.activeInfo.name
+					),
+					_react2.default.createElement(
+						'div',
+						{ id: 'imagewrapper' },
+						_react2.default.createElement('img', { id: 'profilepic', src: picurl }),
+						_react2.default.createElement(ActiveMap, { lat: lat, lng: lng, markerLocation: markerLocation })
+					),
 					_react2.default.createElement(
 						'a',
-						{ href: this.props.activeInfo.website, target: '_blank' },
+						{ id: 'museumsitebutton', href: this.props.activeInfo.website, target: '_blank' },
 						'Go to site'
 					),
 					_react2.default.createElement(
 						'p',
-						null,
-						'Name = ',
-						this.props.activeInfo.name
-					),
-					_react2.default.createElement(
-						'p',
-						null,
+						{ id: 'blurb' },
 						this.props.activeInfo.blurb
 					)
 				);
@@ -327,6 +338,8 @@
 	
 		return InfoWindow;
 	}(_react2.default.Component);
+	
+	// Six-icon menu to select/set museum category; 'landing page' of app
 	
 	var WheelMenu = function (_React$Component7) {
 		_inherits(WheelMenu, _React$Component7);
@@ -350,40 +363,22 @@
 					'div',
 					{ id: 'menu' },
 					_react2.default.createElement(
-						'p',
-						null,
-						'Explore The Capital\'s Museums'
+						'h1',
+						{ id: 'menutitle' },
+						'Explore ',
+						_react2.default.createElement(
+							'span',
+							{ id: 'the' },
+							'the'
+						),
+						' Capital\'s Museums'
 					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuHistory', onClick: this.selectCategory.bind(this, 'History') },
-						'History'
-					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuArt', onClick: this.selectCategory.bind(this, 'Art') },
-						'Art'
-					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuMedia', onClick: this.selectCategory.bind(this, 'Media') },
-						'Media'
-					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuTop', onClick: this.selectCategory.bind(this, 'Top5') },
-						'Top 5'
-					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuMilitary', onClick: this.selectCategory.bind(this, 'Military') },
-						'Military'
-					),
-					_react2.default.createElement(
-						'div',
-						{ id: 'menuScience', onClick: this.selectCategory.bind(this, 'Science') },
-						'Science'
-					)
+					_react2.default.createElement('img', { id: 'menuhistory', onClick: this.selectCategory.bind(this, 'History'), src: '../images/menuhistory.png' }),
+					_react2.default.createElement('img', { id: 'menuart', onClick: this.selectCategory.bind(this, 'Art'), src: '../images/menuart.png' }),
+					_react2.default.createElement('img', { id: 'menumedia', onClick: this.selectCategory.bind(this, 'Media'), src: '../images/menumedia.png' }),
+					_react2.default.createElement('img', { id: 'menutop', onClick: this.selectCategory.bind(this, 'Top Five'), src: '../images/menutop.png' }),
+					_react2.default.createElement('img', { id: 'menumilitary', onClick: this.selectCategory.bind(this, 'Military'), src: '../images/menumilitary.png' }),
+					_react2.default.createElement('img', { id: 'menuscience', onClick: this.selectCategory.bind(this, 'Science'), src: '../images/menuscience.png' })
 				);
 			}
 		}]);
@@ -431,7 +426,7 @@
 				var placeResults = [];
 				service.nearbySearch({
 					location: trafalgarSquare,
-					radius: 4000,
+					radius: 5000,
 					type: ['museum'],
 					rankBy: google.maps.places.RankBy.PROMINENCE
 				}, function (places, status, pagination) {
@@ -444,6 +439,9 @@
 							for (var _iterator2 = places[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 								var place = _step2.value;
 	
+								if (place.photos) {
+									place['googlephoto'] = place.photos[0].getUrl({ 'maxHeight': 500, 'maxWidth': 500 });
+								}
 								placeResults.push(place);
 							}
 							// Get next 20 places, must be gathered as separate call to .nextPage() per api specs
@@ -474,6 +472,9 @@
 								for (var _iterator3 = nextResults[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 									var place = _step3.value;
 	
+									if (place.photos) {
+										place['googlephoto'] = place.photos[0].getUrl({ 'maxHeight': 500, 'maxWidth': 500 });
+									}
 									placeResults.push(place);
 								}
 							} catch (err) {
@@ -491,9 +492,40 @@
 								}
 							}
 						}
+						var currentMuseum = placeResults[0];
+						// If user has selected a category by the time museums load, set active museum
+						// to first museum in master list that is of that category
+						if (_this9.state.currentCategory !== null) {
+							var _iteratorNormalCompletion4 = true;
+							var _didIteratorError4 = false;
+							var _iteratorError4 = undefined;
+	
+							try {
+								for (var _iterator4 = placeResults[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+									var museum = _step4.value;
+	
+									if (museum.name === "The British Museum" && (_this9.state.currentCategory === "History" || _this9.state.currentCategory === "Top Five") || museum.name === "The National Gallery" && _this9.state.currentCategory === "Art" || museum.name === "Churchill War Rooms" && _this9.state.currentCategory === "Military" || museum.name === "Science Museum" && _this9.state.currentCategory === "Science") {
+										currentMuseum = museum;
+									}
+								}
+							} catch (err) {
+								_didIteratorError4 = true;
+								_iteratorError4 = err;
+							} finally {
+								try {
+									if (!_iteratorNormalCompletion4 && _iterator4.return) {
+										_iterator4.return();
+									}
+								} finally {
+									if (_didIteratorError4) {
+										throw _iteratorError4;
+									}
+								}
+							}
+						}
 	
 						// setState tells React state has changed, updates UI accordingly
-						_this9.setState({ museums: placeResults, activeMuseum: placeResults[0] });
+						_this9.setState({ museums: placeResults, activeMuseum: currentMuseum });
 						// If Wiki AJAX has already completed, use museum list & wiki data to assign categories
 						if (_this9.state.wikiText !== null) {
 							_this9.assignSubCategories();
@@ -533,30 +565,30 @@
 			key: 'setCurrentCategory',
 			value: function setCurrentCategory(category) {
 				var newActiveMuseum = null;
-				var _iteratorNormalCompletion4 = true;
-				var _didIteratorError4 = false;
-				var _iteratorError4 = undefined;
+				var _iteratorNormalCompletion5 = true;
+				var _didIteratorError5 = false;
+				var _iteratorError5 = undefined;
 	
 				try {
-					for (var _iterator4 = this.state.museums[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-						var museum = _step4.value;
+					for (var _iterator5 = this.state.museums[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+						var museum = _step5.value;
 	
-						if (museum.category === category || category === "Top5" && museum['top5']) {
+						if (museum.category === category || category === "Top Five" && museum['top5']) {
 							newActiveMuseum = museum;
 							break;
 						}
 					}
 				} catch (err) {
-					_didIteratorError4 = true;
-					_iteratorError4 = err;
+					_didIteratorError5 = true;
+					_iteratorError5 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion4 && _iterator4.return) {
-							_iterator4.return();
+						if (!_iteratorNormalCompletion5 && _iterator5.return) {
+							_iterator5.return();
 						}
 					} finally {
-						if (_didIteratorError4) {
-							throw _iteratorError4;
+						if (_didIteratorError5) {
+							throw _iteratorError5;
 						}
 					}
 				}
@@ -619,35 +651,41 @@
 			key: 'getActiveWiki',
 			value: function getActiveWiki() {
 				if (this.state.activeMuseum !== null) {
-					if (this.state.activeMuseum.name === 'Hunterian Museum') {
-						this.state.activeMuseum.wikiName = 'Royal College of Surgeons of England';
-						// Edge cases for name mis-matches, generic museums without 'London' specifier
-					} else if ((this.state.activeMuseum.name === "Natural History Museum" || this.state.activeMuseum.name === "Science Museum" || this.state.activeMuseum.name === "Spencer House Ltd" || this.state.activeMuseum.name === "National Portrait Gallery") && this.state.activeMuseum.wikiName.indexOf(", London") === -1) {
-							this.state.activeMuseum.wikiName += ", London";
-						}
-	
-					$.ajax({
-						type: "GET",
-						url: "https://en.wikipedia.org/w/api.php?format=json&action=query&exsentences=8&prop=extracts&exintro=&explaintext=&titles=" + this.state.activeMuseum.wikiName,
-						dataType: 'jsonp',
-						jsonp: 'callback',
-						headers: { 'Api-User-Agent': 'stevenMuseumApp' },
-						xhrFields: { withCredentials: true },
-						app: this,
-						success: function success(data) {
-							var page = data.query.pages;
-							var pageKey = Object.keys(page)[0];
-							var description = page[pageKey].extract;
-							// If description is empty, you have to find the correct wiki title via the redirect
-							if (description === "") {
-								this.app.getRedirectWiki();
-							} else {
-								var info = this.app.state.activeInfo;
-								info.blurb = description;
-								this.app.setState({ activeInfo: info });
+					if (this.state.activeMuseum.wikiName !== undefined) {
+						if (this.state.activeMuseum.name === 'Hunterian Museum') {
+							this.state.activeMuseum.wikiName = 'Royal College of Surgeons of England';
+							// Edge cases for generic museums without 'London' specifier, append ', London' to end
+						} else if ((this.state.activeMuseum.name === "Natural History Museum" || this.state.activeMuseum.name === "Science Museum" || this.state.activeMuseum.name === "Spencer House Ltd" || this.state.activeMuseum.name === "National Portrait Gallery") && this.state.activeMuseum.wikiName.indexOf(", London") === -1) {
+								this.state.activeMuseum.wikiName += ", London";
 							}
-						}
-					});
+	
+						// Ajax to get Wikipedia introduction paragraph ('blurb')
+						$.ajax({
+							type: "GET",
+							url: "https://en.wikipedia.org/w/api.php?format=json&action=query&exsentences=4&prop=extracts&exintro=&explaintext=&titles=" + this.state.activeMuseum.wikiName,
+							dataType: 'jsonp',
+							jsonp: 'callback',
+							headers: { 'Api-User-Agent': 'stevenMuseumApp' },
+							xhrFields: { withCredentials: true },
+							app: this,
+							success: function success(data) {
+								var page = data.query.pages;
+								var pageKey = Object.keys(page)[0];
+								var description = page[pageKey].extract;
+								// If description is empty, you have to find the correct wiki title via the redirect
+								if (description === "") {
+									this.app.getRedirectWiki();
+								} else {
+									if (description.indexOf("^") !== -1) {
+										description = description.substr(0, description.indexOf("^"));
+									}
+									var info = this.app.state.activeInfo;
+									info.blurb = description;
+									this.app.setState({ activeInfo: info });
+								}
+							}
+						});
+					}
 				}
 			}
 	
@@ -693,19 +731,25 @@
 			key: 'assignCategories',
 			value: function assignCategories() {
 				var categorizedMuseums = [];
-				var _iteratorNormalCompletion5 = true;
-				var _didIteratorError5 = false;
-				var _iteratorError5 = undefined;
+				var _iteratorNormalCompletion6 = true;
+				var _didIteratorError6 = false;
+				var _iteratorError6 = undefined;
 	
 				try {
-					for (var _iterator5 = this.state.museums[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-						var museum = _step5.value;
+					for (var _iterator6 = this.state.museums[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+						var museum = _step6.value;
 	
 						var subcategory = museum.subcategory;
 						if (museum.name === "The British Museum" || museum.name === "Victoria and Albert Museum" || museum.name === "The National Gallery" || museum.name === "Tate Modern" || museum.name === "Museum of London") {
 							museum['top5'] = true;
 						} else {
 							museum['top5'] = false;
+						}
+						if (museum.name === "Victoria and Albert Museum") {
+							// Niche case; more art than history
+							museum['category'] = "Art";
+							categorizedMuseums.push(museum);
+							continue;
 						}
 						if (museum.name === "The Sherlock Holmes Museum" || museum.name === "Charles Dickens Museum") {
 							// Niche cases; not history museums
@@ -719,20 +763,20 @@
 							categorizedMuseums.push(museum);
 							continue;
 						}
-						var _iteratorNormalCompletion6 = true;
-						var _didIteratorError6 = false;
-						var _iteratorError6 = undefined;
+						var _iteratorNormalCompletion7 = true;
+						var _didIteratorError7 = false;
+						var _iteratorError7 = undefined;
 	
 						try {
-							for (var _iterator6 = Object.keys(this.props.categories)[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-								var category = _step6.value;
-								var _iteratorNormalCompletion7 = true;
-								var _didIteratorError7 = false;
-								var _iteratorError7 = undefined;
+							for (var _iterator7 = Object.keys(this.props.categories)[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+								var category = _step7.value;
+								var _iteratorNormalCompletion8 = true;
+								var _didIteratorError8 = false;
+								var _iteratorError8 = undefined;
 	
 								try {
-									for (var _iterator7 = this.props.categories[category][Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-										var keyword = _step7.value;
+									for (var _iterator8 = this.props.categories[category][Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+										var keyword = _step8.value;
 	
 										if (subcategory.indexOf(keyword) !== -1) {
 											museum['category'] = category;
@@ -740,46 +784,46 @@
 										}
 									}
 								} catch (err) {
-									_didIteratorError7 = true;
-									_iteratorError7 = err;
+									_didIteratorError8 = true;
+									_iteratorError8 = err;
 								} finally {
 									try {
-										if (!_iteratorNormalCompletion7 && _iterator7.return) {
-											_iterator7.return();
+										if (!_iteratorNormalCompletion8 && _iterator8.return) {
+											_iterator8.return();
 										}
 									} finally {
-										if (_didIteratorError7) {
-											throw _iteratorError7;
+										if (_didIteratorError8) {
+											throw _iteratorError8;
 										}
 									}
 								}
 							}
 						} catch (err) {
-							_didIteratorError6 = true;
-							_iteratorError6 = err;
+							_didIteratorError7 = true;
+							_iteratorError7 = err;
 						} finally {
 							try {
-								if (!_iteratorNormalCompletion6 && _iterator6.return) {
-									_iterator6.return();
+								if (!_iteratorNormalCompletion7 && _iterator7.return) {
+									_iterator7.return();
 								}
 							} finally {
-								if (_didIteratorError6) {
-									throw _iteratorError6;
+								if (_didIteratorError7) {
+									throw _iteratorError7;
 								}
 							}
 						}
 					}
 				} catch (err) {
-					_didIteratorError5 = true;
-					_iteratorError5 = err;
+					_didIteratorError6 = true;
+					_iteratorError6 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion5 && _iterator5.return) {
-							_iterator5.return();
+						if (!_iteratorNormalCompletion6 && _iterator6.return) {
+							_iterator6.return();
 						}
 					} finally {
-						if (_didIteratorError5) {
-							throw _iteratorError5;
+						if (_didIteratorError6) {
+							throw _iteratorError6;
 						}
 					}
 				}
@@ -795,13 +839,13 @@
 			key: 'assignSubCategories',
 			value: function assignSubCategories() {
 				var categorizedMuseums = [];
-				var _iteratorNormalCompletion8 = true;
-				var _didIteratorError8 = false;
-				var _iteratorError8 = undefined;
+				var _iteratorNormalCompletion9 = true;
+				var _didIteratorError9 = false;
+				var _iteratorError9 = undefined;
 	
 				try {
-					for (var _iterator8 = this.state.museums[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-						var museum = _step8.value;
+					for (var _iterator9 = this.state.museums[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+						var museum = _step9.value;
 	
 						var name = museum.name;
 						// Edge cases; Google Places that don't match with wiki Table
@@ -855,16 +899,16 @@
 						}
 					}
 				} catch (err) {
-					_didIteratorError8 = true;
-					_iteratorError8 = err;
+					_didIteratorError9 = true;
+					_iteratorError9 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion8 && _iterator8.return) {
-							_iterator8.return();
+						if (!_iteratorNormalCompletion9 && _iterator9.return) {
+							_iterator9.return();
 						}
 					} finally {
-						if (_didIteratorError8) {
-							throw _iteratorError8;
+						if (_didIteratorError9) {
+							throw _iteratorError9;
 						}
 					}
 				}
@@ -883,10 +927,14 @@
 	
 				return _react2.default.createElement(
 					'div',
-					null,
+					{ id: 'appwrapper' },
 					_react2.default.createElement(WheelMenu, { onCategoryChange: this.setCurrentCategory.bind(this) }),
-					_react2.default.createElement(InfoWindow, { activeInfo: this.state.activeInfo }),
-					_react2.default.createElement(FilterList, { handleClick: this.setActiveMuseum.bind(this), category: this.state.currentCategory, museums: this.state.museums })
+					_react2.default.createElement(
+						'div',
+						{ id: 'maindisplay' },
+						_react2.default.createElement(FilterList, { handleClick: this.setActiveMuseum.bind(this), category: this.state.currentCategory, museums: this.state.museums }),
+						_react2.default.createElement(InfoWindow, { activeInfo: this.state.activeInfo, activeMuseum: this.state.activeMuseum })
+					)
 				);
 			}
 		}]);

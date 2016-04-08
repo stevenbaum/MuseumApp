@@ -1,15 +1,13 @@
 import React from 'react';
 import {render} from 'react-dom';
 
-// PSA - functional components just use props.whatever,
-// class components use this.props.whatever OR this.state.whatever if there's state constructed,
-// Don't get them switched or everything explodes
+// Self PSA - functional components just use props.whatever,
+// class components use this.props.whatever OR this.state.whatever if there's state constructed
 
 // Functional Component Structure
 /*var Hello = (props) => (
 	<div>
 		<div>Hey, {props.name}.</div>
-		<input type="button" onclick={changemap} value="Click mee" />
 	</div>
 );*/
 
@@ -23,9 +21,10 @@ class MuseumRow extends React.Component {
 
 	render() {
 		return (
-			<tr>
-				<td onClick={this.selectMuseum.bind(this, this.props.museum)}>{this.props.museum.name}</td>
-			</tr>
+			<div id ="card" onClick={this.selectMuseum.bind(this, this.props.museum)}>
+				<img id="tablethumbnail" src={this.props.museum.googlephoto} />
+				<h5>{this.props.museum.name}</h5>
+			</div>
 		);
 	}
 };
@@ -33,28 +32,25 @@ class MuseumRow extends React.Component {
 // List of museums, composed of rows
 class MuseumList extends React.Component {
 	render() {
-		let rows = [];
+		let cards = [];
 
 		// React likes it if array elements (like those that end up in lists/tables)
 		// Each have a unique 'key' prop, which here is just a number
 		for (var museum of this.props.museums) {
-			if (museum.category === this.props.category || (this.props.category === "Top5" && museum['top5'])) {
-				rows.push(<MuseumRow handleClick={this.props.handleClick.bind(this)} key={museum.id} museum={museum} />);
+			if (museum.category === this.props.category || (this.props.category === "Top Five" && museum['top5'])) {
+				cards.push(<MuseumRow handleClick={this.props.handleClick.bind(this)} key={museum.id} museum={museum} />);
 			}
 		}
 		return (
-			<table id="museumtable">
-				<thead>
-					<tr>
-						<th id="tablehead">Museum Master List</th>
-					</tr>
-				</thead>
-				<tbody>{rows}</tbody>
-			</table>
+			<div>
+				<h2 id="tablehead">{this.props.category} Museums</h2>
+				<div id="cardlist">{cards}</div>
+			</div>
 		);
 	}
 }
 
+// TODO: Add in filters once category has been established: 'open now', 'free', etc.
 class MuseumFilters extends React.Component {
 
 	render() {
@@ -66,17 +62,19 @@ class MuseumFilters extends React.Component {
 	}
 }
 
+// List of museums with toggle-able filters above, only shows those of selected category
 class FilterList extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<div id="museumtable">
 				<MuseumList handleClick={this.props.handleClick.bind(this)} category={this.props.category} museums={this.props.museums} />
 			</div>
 		);
 	}
 }
 
+// Google Maps map
 class ActiveMap extends React.Component {
 
 	componentDidMount() {
@@ -108,7 +106,9 @@ class ActiveMap extends React.Component {
 			});
 		}
 		return (
-			<div ref="mapnode" id="activemap"></div>
+			<div id="mapwrapper">
+				<div ref="mapnode" id="activemap"></div>
+			</div>
 		);
 	}
 }
@@ -121,6 +121,7 @@ class InfoWindow extends React.Component {
 	render() {
 		var lat = 51.5081;
 		var lng = -0.1281;
+		var picurl = ""
 		var markerLocation = {lat: 0, lng: 0};
 		if (typeof this.props.activeInfo.coordinates !== 'undefined') {
 			lat = this.props.activeInfo.coordinates.lat;
@@ -128,17 +129,25 @@ class InfoWindow extends React.Component {
 			markerLocation = this.props.activeInfo.markerLocation;
 		}
 
+		if (this.props.activeMuseum !== null) {
+			picurl = this.props.activeMuseum.googlephoto;
+		}
+
 		return (
-			<div id="infoBox">
-				<ActiveMap lat={lat} lng={lng} markerLocation={markerLocation}/>
-				<a href={this.props.activeInfo.website} target="_blank">Go to site</a>
-				<p>Name = {this.props.activeInfo.name}</p>
-				<p>{this.props.activeInfo.blurb}</p>
+			<div id="infowindow">
+				<h1>{this.props.activeInfo.name}</h1>
+				<div id="imagewrapper">
+					<img id="profilepic" src={picurl} />
+					<ActiveMap lat={lat} lng={lng} markerLocation={markerLocation}/>
+				</div>
+				<a id="museumsitebutton" href={this.props.activeInfo.website} target="_blank">Go to site</a>
+				<p id="blurb">{this.props.activeInfo.blurb}</p>
 			</div>
 		);
 	}
 }
 
+// Six-icon menu to select/set museum category; 'landing page' of app
 class WheelMenu extends React.Component {
 
 	selectCategory(cat) {
@@ -146,28 +155,22 @@ class WheelMenu extends React.Component {
 	}
 
 	render() {
-
+		// Sublime sees a syntax highlighting error on the <h1> because of the apostrophe, but it compiles correctly
 		return (
 			<div id="menu">
-				<p>Explore The Capital's Museums</p>
-				<div id="menuHistory" onClick={this.selectCategory.bind(this, 'History')}>
-					History
-				</div>
-				<div id="menuArt" onClick={this.selectCategory.bind(this, 'Art')}>
-					Art
-				</div>
-				<div id="menuMedia" onClick={this.selectCategory.bind(this, 'Media')}>
-					Media
-				</div>
-				<div id="menuTop" onClick={this.selectCategory.bind(this, 'Top5')}>
-					Top 5
-				</div>
-				<div id="menuMilitary" onClick={this.selectCategory.bind(this, 'Military')}>
-					Military
-				</div>
-				<div id="menuScience" onClick={this.selectCategory.bind(this, 'Science')}>
-					Science
-				</div>
+				<h1 id="menutitle">Explore <span id="the">the</span> Capital's Museums</h1>
+				
+				<img id="menuhistory" onClick={this.selectCategory.bind(this, 'History')} src="../images/menuhistory.png" />
+
+				<img id="menuart" onClick={this.selectCategory.bind(this, 'Art')} src="../images/menuart.png" />
+
+				<img id="menumedia" onClick={this.selectCategory.bind(this, 'Media')} src="../images/menumedia.png" />
+
+				<img id="menutop" onClick={this.selectCategory.bind(this, 'Top Five')} src="../images/menutop.png" />
+
+				<img id="menumilitary" onClick={this.selectCategory.bind(this, 'Military')} src="../images/menumilitary.png" />
+
+				<img id="menuscience" onClick={this.selectCategory.bind(this, 'Science')} src="../images/menuscience.png" />
 			</div>
 		);
 	}
@@ -201,13 +204,16 @@ class MuseumApp extends React.Component {
 		var placeResults = [];
 		service.nearbySearch({
 			location: trafalgarSquare,
-			radius: 4000,
+			radius: 5000,
 			type: ['museum'],
 			rankBy: google.maps.places.RankBy.PROMINENCE,
 			},
 			(places, status, pagination) => {
 				if (status === google.maps.places.PlacesServiceStatus.OK) {
 					for (var place of places) {
+						if (place.photos) {
+							place['googlephoto'] = place.photos[0].getUrl({'maxHeight': 500, 'maxWidth': 500});
+						}
 						placeResults.push(place);
 					}
 					// Get next 20 places, must be gathered as separate call to .nextPage() per api specs
@@ -216,12 +222,30 @@ class MuseumApp extends React.Component {
 					if (pagination.hasNextPage) {
 						nextResults = pagination.nextPage();
 						for (var place of nextResults) {
+							if (place.photos) {
+								place['googlephoto'] = place.photos[0].getUrl({'maxHeight': 500, 'maxWidth': 500});
+							}
 							placeResults.push(place);
+						}
+					}
+					var currentMuseum = placeResults[0];
+					// If user has selected a category by the time museums load, set active museum
+					// to first museum in master list that is of that category
+					if (this.state.currentCategory !== null) {
+						for (var museum of placeResults) {
+							if ((museum.name === "The British Museum" && (this.state.currentCategory === "History" 
+																		|| this.state.currentCategory === "Top Five")) ||
+								(museum.name === "The National Gallery" && this.state.currentCategory === "Art") ||
+								(museum.name === "Churchill War Rooms" && this.state.currentCategory === "Military") ||
+								(museum.name === "Science Museum" && this.state.currentCategory === "Science")) 
+							{
+								currentMuseum = museum;
+							}
 						}
 					}
 
 					// setState tells React state has changed, updates UI accordingly
-					this.setState({museums: placeResults, activeMuseum: placeResults[0]});
+					this.setState({museums: placeResults, activeMuseum: currentMuseum});
 					// If Wiki AJAX has already completed, use museum list & wiki data to assign categories
 					if (this.state.wikiText !== null) {
 						this.assignSubCategories();
@@ -259,7 +283,7 @@ class MuseumApp extends React.Component {
 	setCurrentCategory(category) {
 		var newActiveMuseum = null;
 		for (var museum of this.state.museums) {
-			if (museum.category === category || (category === "Top5" && museum['top5'])) {
+			if (museum.category === category || (category === "Top Five" && museum['top5'])) {
 				newActiveMuseum = museum;
 				break;
 			}
@@ -310,41 +334,47 @@ class MuseumApp extends React.Component {
 	// Assuming there is an active museum, get wiki intro via mediawiki AJAX call
 	getActiveWiki () {
 		if (this.state.activeMuseum !== null) {
-			if (this.state.activeMuseum.name === 'Hunterian Museum') {
-				this.state.activeMuseum.wikiName = 'Royal College of Surgeons of England';
-			// Edge cases for generic museums without 'London' specifier, append ', London' to end
-			} else if (
-				(this.state.activeMuseum.name === "Natural History Museum" ||
-				this.state.activeMuseum.name === "Science Museum" ||
-				this.state.activeMuseum.name === "Spencer House Ltd" ||
-				this.state.activeMuseum.name === "National Portrait Gallery")
-				&&	this.state.activeMuseum.wikiName.indexOf(", London") === -1) 
-			{
-				this.state.activeMuseum.wikiName += ", London";
-			}
-
-			$.ajax ({
-				type: "GET",
-				url: "https://en.wikipedia.org/w/api.php?format=json&action=query&exsentences=8&prop=extracts&exintro=&explaintext=&titles=" + this.state.activeMuseum.wikiName,
-				dataType: 'jsonp',
-				jsonp: 'callback',
-				headers: { 'Api-User-Agent': 'stevenMuseumApp' },
-				xhrFields: { withCredentials: true },
-				app: this,
-				success: function(data) {
-					var page = data.query.pages;
-					var pageKey = Object.keys(page)[0];
-					var description = page[pageKey].extract;
-					// If description is empty, you have to find the correct wiki title via the redirect
-					if (description === "") {
-						this.app.getRedirectWiki();
-					} else {
-						var info = this.app.state.activeInfo;
-						info.blurb= description;
-						this.app.setState({activeInfo: info});
-					}
+			if (this.state.activeMuseum.wikiName !== undefined) {
+				if (this.state.activeMuseum.name === 'Hunterian Museum') {
+					this.state.activeMuseum.wikiName = 'Royal College of Surgeons of England';
+				// Edge cases for generic museums without 'London' specifier, append ', London' to end
+				} else if (
+					(this.state.activeMuseum.name === "Natural History Museum" ||
+					this.state.activeMuseum.name === "Science Museum" ||
+					this.state.activeMuseum.name === "Spencer House Ltd" ||
+					this.state.activeMuseum.name === "National Portrait Gallery")
+					&&	this.state.activeMuseum.wikiName.indexOf(", London") === -1) 
+				{
+					this.state.activeMuseum.wikiName += ", London";
 				}
-			});
+
+				// Ajax to get Wikipedia introduction paragraph ('blurb')
+				$.ajax ({
+					type: "GET",
+					url: "https://en.wikipedia.org/w/api.php?format=json&action=query&exsentences=4&prop=extracts&exintro=&explaintext=&titles=" + this.state.activeMuseum.wikiName,
+					dataType: 'jsonp',
+					jsonp: 'callback',
+					headers: { 'Api-User-Agent': 'stevenMuseumApp' },
+					xhrFields: { withCredentials: true },
+					app: this,
+					success: function(data) {
+						var page = data.query.pages;
+						var pageKey = Object.keys(page)[0];
+						var description = page[pageKey].extract;
+						// If description is empty, you have to find the correct wiki title via the redirect
+						if (description === "") {
+							this.app.getRedirectWiki();
+						} else {
+							if (description.indexOf("^") !== -1) {
+								description = description.substr(0, description.indexOf("^"));
+							}
+							var info = this.app.state.activeInfo;
+							info.blurb= description;
+							this.app.setState({activeInfo: info});
+						}
+					}
+				});
+			}
 		}
 	}
 
@@ -391,6 +421,11 @@ class MuseumApp extends React.Component {
 				museum['top5'] = true;
 			} else {
 				museum['top5'] = false;
+			}
+			if (museum.name === "Victoria and Albert Museum") { // Niche case; more art than history
+				museum['category'] = "Art";
+				categorizedMuseums.push(museum);
+				continue;
 			}
 			if (museum.name === "The Sherlock Holmes Museum" || museum.name === "Charles Dickens Museum") { // Niche cases; not history museums
 				museum['category'] = "Media";
@@ -488,10 +523,12 @@ class MuseumApp extends React.Component {
 		}
 
 		return (
-			<div>
+			<div id="appwrapper">
 				<WheelMenu onCategoryChange={this.setCurrentCategory.bind(this)} />
-				<InfoWindow activeInfo={this.state.activeInfo} />
-				<FilterList handleClick={this.setActiveMuseum.bind(this)} category={this.state.currentCategory} museums={this.state.museums} />
+				<div id="maindisplay">
+					<FilterList handleClick={this.setActiveMuseum.bind(this)} category={this.state.currentCategory} museums={this.state.museums} />
+					<InfoWindow activeInfo={this.state.activeInfo} activeMuseum={this.state.activeMuseum} />
+				</div>
 			</div>
 		);
 	}

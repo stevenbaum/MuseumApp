@@ -1,26 +1,181 @@
-html, body {
-	height: 100%;
+body {
+	font-family: "Lato","Helvetica Neue","Trebuchet MS", Helvetica, sans-serif;
+	word-spacing: 0.08em;
+	letter-spacing: 0.04em;
+	line-height: 130%;
 	margin: 0;
 	padding: 0;
 	background-color: #edf1f2;
 }
 
-#menuHistory:hover,
-#menuArt:hover,
-#menuMedia:hover,
-#menuTop:hover,
-#menuMilitary:hover,
-#menuScience:hover,
-td:hover {
+#appwrapper {
+	justify-content: center;
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+	max-width: 1600px;
+	margin-top: 1%;
+}
+
+#menu {
+	justify-content: center;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin-top: 0;
+	height: 100vh;
+	min-height: 400px;
+	max-height: 1000px;
+	width: 95vh;
+	min-width: 400px;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	z-index: 1;
+}
+
+#menutitle {
+	top: 27.5%;
+	left: 38%;
+	width: 2%;
+	line-height: 140%;
+	font-size: 6vh;
+}
+
+#the {
+	font-size: 0.9em;
+}
+
+#menu > img, #menu > h1 {
+	position: absolute;
+}
+
+#menu > img {
+	width: 30%;
+	max-width: 336px;
+}
+
+#menuhistory {
+	top: 2%;
+	right: 15%;
+}
+
+#menuart {
+	top: 35%;
+	left: 0%;
+}
+
+#menumedia {
+	bottom: 4%;
+	right: 15%;
+}
+
+#menutop {
+	bottom: 4%;
+	left: 15%;
+}
+
+#menumilitary {
+	top: 35%;
+	right: 0%;
+}
+
+#menuscience {
+	top: 2%;
+	left: 15%;
+}
+
+
+
+#menuhistory:hover,
+#menuart:hover,
+#menumedia:hover,
+#menutop:hover,
+#menumilitary:hover,
+#menuscience:hover,
+#card:hover {
 	cursor: pointer;
+}
+
+#maindisplay {
+	margin: inherit;
+	display: flex;
+	height: 90vh;
+}
+
+#museumtable {
+	min-width: 505px;
+	max-width: 505px;
+	overflow: auto;
+}
+
+#tablehead {
+	text-align: center;
+}
+
+#cardlist {
+	display: inline-flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+#card {
+	width: 150px;
+	height: 190px;
+	margin: 6px;
+	background-color: wheat;
+}
+
+#card > h5 {
+	margin-top: 3px;
+	text-align: center;
+}
+
+#tablethumbnail {
+	width: 100%;
+	height: 125px;
+}
+
+#infowindow {
+	margin-left: 20px;
+	width: inherit;
+}
+
+#infowindow > h1 {
+	text-align: center;
+}
+
+#imagewrapper {
+	width: 45%;
+	position: relative;
+	float: left;
+	margin: 4px;
+}
+
+#profilepic {
+	width: 100%;
+	min-height: 38vh;
+	max-height: 38vh;
+}
+
+#mapwrapper {
+	width: 100%;
+	height: 40vh;
+	float: left;
+	margin-right: 35px;
 }
 
 #map {
 	height: 50%;
 	width: 50%;
+	display: none;
 }
 
 #activemap {
-	height: 400px;
-	width: 600px;
+	height: 100%;
+	min-width: 250px;
+	min-height: 250px;
 }
+
