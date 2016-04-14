@@ -266,38 +266,38 @@ class WheelMenu extends React.Component {
 				<h1 className={titleClass}>Explore <span id="the">the</span> Capital's Museums</h1>
 				
 				<div className={historyClass}>
-					<img className="colorimage" src="/images/menuhistory_color.png" />
-					<img className={historyImage} onClick={this.selectCategory.bind(this, 'History')} src="/images/menuhistory.png" />
+					<img className="colorimage" src="images/menuhistory_color.png" />
+					<img className={historyImage} onClick={this.selectCategory.bind(this, 'History')} src="images/menuhistory.png" />
 					<span className={historyText} onClick={this.selectCategory.bind(this, 'History')}>History</span>
 				</div>
 
 				<div className={artClass}>
-					<img className="colorimage" src="/images/menuart_color.png" />
-					<img className={artImage} onClick={this.selectCategory.bind(this, 'Art')} src="/images/menuart.png" />
+					<img className="colorimage" src="images/menuart_color.png" />
+					<img className={artImage} onClick={this.selectCategory.bind(this, 'Art')} src="images/menuart.png" />
 					<span className={artText} onClick={this.selectCategory.bind(this, 'Art')}>Art & Design</span>
 				</div>
 
 				<div className={mediaClass}>
-					<img className="colorimage" src="/images/menumedia_color.png" />
-					<img className={mediaImage} onClick={this.selectCategory.bind(this, 'Media')} src="/images/menumedia.png" />
+					<img className="colorimage" src="images/menumedia_color.png" />
+					<img className={mediaImage} onClick={this.selectCategory.bind(this, 'Media')} src="images/menumedia.png" />
 					<span className={mediaText} onClick={this.selectCategory.bind(this, 'Media')}>Media</span>
 				</div>
 
 				<div className={topClass}>
-					<img className="colorimage" src="/images/menutop_color.png" />
-					<img className={topImage} onClick={this.selectCategory.bind(this, 'Top Five')} src="/images/menutop.png" />
+					<img className="colorimage" src="images/menutop_color.png" />
+					<img className={topImage} onClick={this.selectCategory.bind(this, 'Top Five')} src="images/menutop.png" />
 					<span className={topText} onClick={this.selectCategory.bind(this, 'Top Five')}>Top 5</span>
 				</div>
 
 				<div className={militaryClass}>
-					<img className="colorimage" src="/images/menumilitary_color.png" />
-					<img className={militaryImage} onClick={this.selectCategory.bind(this, 'Military')} src="/images/menumilitary.png" />
+					<img className="colorimage" src="images/menumilitary_color.png" />
+					<img className={militaryImage} onClick={this.selectCategory.bind(this, 'Military')} src="images/menumilitary.png" />
 					<span className={militaryText} onClick={this.selectCategory.bind(this, 'Military')}>Military</span>
 				</div>
 
 				<div className={scienceClass}>
-					<img className="colorimage" src="/images/menuscience_color.png" />
-					<img className={scienceImage} onClick={this.selectCategory.bind(this, 'Science')} src="/images/menuscience.png" />
+					<img className="colorimage" src="images/menuscience_color.png" />
+					<img className={scienceImage} onClick={this.selectCategory.bind(this, 'Science')} src="images/menuscience.png" />
 					<span className={scienceText} onClick={this.selectCategory.bind(this, 'Science')}>Science & Tech</span>
 				</div>
 			</div>

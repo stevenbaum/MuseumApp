@@ -489,8 +489,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: historyClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuhistory_color.png' }),
-						_react2.default.createElement('img', { className: historyImage, onClick: this.selectCategory.bind(this, 'History'), src: '/images/menuhistory.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menuhistory_color.png' }),
+						_react2.default.createElement('img', { className: historyImage, onClick: this.selectCategory.bind(this, 'History'), src: 'images/menuhistory.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: historyText, onClick: this.selectCategory.bind(this, 'History') },
@@ -500,8 +500,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: artClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuart_color.png' }),
-						_react2.default.createElement('img', { className: artImage, onClick: this.selectCategory.bind(this, 'Art'), src: '/images/menuart.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menuart_color.png' }),
+						_react2.default.createElement('img', { className: artImage, onClick: this.selectCategory.bind(this, 'Art'), src: 'images/menuart.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: artText, onClick: this.selectCategory.bind(this, 'Art') },
@@ -511,8 +511,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: mediaClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menumedia_color.png' }),
-						_react2.default.createElement('img', { className: mediaImage, onClick: this.selectCategory.bind(this, 'Media'), src: '/images/menumedia.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menumedia_color.png' }),
+						_react2.default.createElement('img', { className: mediaImage, onClick: this.selectCategory.bind(this, 'Media'), src: 'images/menumedia.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: mediaText, onClick: this.selectCategory.bind(this, 'Media') },
@@ -522,8 +522,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: topClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menutop_color.png' }),
-						_react2.default.createElement('img', { className: topImage, onClick: this.selectCategory.bind(this, 'Top Five'), src: '/images/menutop.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menutop_color.png' }),
+						_react2.default.createElement('img', { className: topImage, onClick: this.selectCategory.bind(this, 'Top Five'), src: 'images/menutop.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: topText, onClick: this.selectCategory.bind(this, 'Top Five') },
@@ -533,8 +533,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: militaryClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menumilitary_color.png' }),
-						_react2.default.createElement('img', { className: militaryImage, onClick: this.selectCategory.bind(this, 'Military'), src: '/images/menumilitary.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menumilitary_color.png' }),
+						_react2.default.createElement('img', { className: militaryImage, onClick: this.selectCategory.bind(this, 'Military'), src: 'images/menumilitary.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: militaryText, onClick: this.selectCategory.bind(this, 'Military') },
@@ -544,8 +544,8 @@
 					_react2.default.createElement(
 						'div',
 						{ className: scienceClass },
-						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuscience_color.png' }),
-						_react2.default.createElement('img', { className: scienceImage, onClick: this.selectCategory.bind(this, 'Science'), src: '/images/menuscience.png' }),
+						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menuscience_color.png' }),
+						_react2.default.createElement('img', { className: scienceImage, onClick: this.selectCategory.bind(this, 'Science'), src: 'images/menuscience.png' }),
 						_react2.default.createElement(
 							'span',
 							{ className: scienceText, onClick: this.selectCategory.bind(this, 'Science') },
