@@ -95,9 +95,13 @@
 		}, {
 			key: 'render',
 			value: function render() {
+				var cardClass = "card";
+				if (this.props.isActive) {
+					cardClass += " cardactive";
+				}
 				return _react2.default.createElement(
 					'div',
-					{ id: 'card', onClick: this.selectMuseum.bind(this, this.props.museum) },
+					{ className: cardClass, onClick: this.selectMuseum.bind(this, this.props.museum) },
 					_react2.default.createElement('img', { id: 'tablethumbnail', src: this.props.museum.googlephoto }),
 					_react2.default.createElement(
 						'h5',
@@ -113,7 +117,7 @@
 	
 	;
 	
-	// List of museums, composed of rows
+	// List of museums, composed of rows of 'cards'
 	
 	var MuseumList = function (_React$Component2) {
 		_inherits(MuseumList, _React$Component2);
@@ -131,6 +135,8 @@
 	
 				// React likes it if array elements (like those that end up in lists/tables)
 				// Each have a unique 'key' prop, which here is just a number
+				// ActiveMuseum id needed to trigger CSS for 'active' border
+				var isActiveMuseum = false;
 				var _iteratorNormalCompletion = true;
 				var _didIteratorError = false;
 				var _iteratorError = undefined;
@@ -139,9 +145,14 @@
 					for (var _iterator = this.props.museums[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var museum = _step.value;
 	
-						if (museum.category === this.props.category || this.props.category === "Top Five" && museum['top5']) {
-							cards.push(_react2.default.createElement(MuseumRow, { handleClick: this.props.handleClick.bind(this), key: museum.id, museum: museum }));
+						if (this.props.activeMuseum !== null && museum.name === this.props.activeMuseum.name) {
+							isActiveMuseum = true;
 						}
+						if (museum.category === this.props.category || this.props.category === "Top Five" && museum['top5']) {
+							cards.push(_react2.default.createElement(MuseumRow, { isActive: isActiveMuseum, handleClick: this.props.handleClick.bind(this),
+								key: museum.id, museum: museum }));
+						}
+						isActiveMuseum = false;
 					}
 				} catch (err) {
 					_didIteratorError = true;
@@ -163,7 +174,7 @@
 					null,
 					_react2.default.createElement(
 						'h2',
-						{ id: 'tablehead' },
+						{ className: 'bluetext', id: 'tablehead' },
 						this.props.category,
 						' Museums'
 					),
@@ -200,7 +211,7 @@
 		return MuseumFilters;
 	}(_react2.default.Component);
 	
-	// List of museums with toggle-able filters above, only shows those of selected category
+	// List of museums; implement simple, toggle-able filters
 	
 	var FilterList = function (_React$Component4) {
 		_inherits(FilterList, _React$Component4);
@@ -214,10 +225,15 @@
 		_createClass(FilterList, [{
 			key: 'render',
 			value: function render() {
+				var tableClass = "museumtable opacitytransition";
+				if (!this.props.activated) {
+					tableClass += " transparent";
+				}
 				return _react2.default.createElement(
 					'div',
-					{ id: 'museumtable' },
-					_react2.default.createElement(MuseumList, { handleClick: this.props.handleClick.bind(this), category: this.props.category, museums: this.props.museums })
+					{ className: tableClass },
+					_react2.default.createElement(MuseumList, { handleClick: this.props.handleClick.bind(this), category: this.props.category,
+						activeMuseum: this.props.activeMuseum, museums: this.props.museums })
 				);
 			}
 		}]);
@@ -225,7 +241,7 @@
 		return FilterList;
 	}(_react2.default.Component);
 	
-	// Google Maps map
+	// Google Maps map with Marker on location for active museum
 	
 	var ActiveMap = function (_React$Component5) {
 		_inherits(ActiveMap, _React$Component5);
@@ -259,7 +275,8 @@
 							lat: this.props.lat,
 							lng: this.props.lng
 						},
-						zoom: 15
+						zoom: 15,
+						mapTypeControl: false
 					};
 					var constructedMap = new google.maps.Map(node, mapObj);
 					var mapMarker = new google.maps.Marker({
@@ -278,9 +295,8 @@
 		return ActiveMap;
 	}(_react2.default.Component);
 	
-	// Primary window for displaying a museum's information
+	// Primary window for displaying a museum's information (map and wikipedia text)
 	// Props is an activeMuseum, determined by clicking on a table item
-	// <ActiveMap coordinates={this.props.activeInfo.coordinates} />
 	
 	var InfoWindow = function (_React$Component6) {
 		_inherits(InfoWindow, _React$Component6);
@@ -294,6 +310,7 @@
 		_createClass(InfoWindow, [{
 			key: 'render',
 			value: function render() {
+				var windowClass = "infowindow opacitytransition";
 				var lat = 51.5081;
 				var lng = -0.1281;
 				var picurl = "";
@@ -307,13 +324,15 @@
 				if (this.props.activeMuseum !== null) {
 					picurl = this.props.activeMuseum.googlephoto;
 				}
-	
+				if (!this.props.activated) {
+					windowClass += " transparent";
+				}
 				return _react2.default.createElement(
 					'div',
-					{ id: 'infowindow' },
+					{ className: windowClass },
 					_react2.default.createElement(
 						'h1',
-						null,
+						{ className: 'bluetext' },
 						this.props.activeInfo.name
 					),
 					_react2.default.createElement(
@@ -325,12 +344,21 @@
 					_react2.default.createElement(
 						'a',
 						{ id: 'museumsitebutton', href: this.props.activeInfo.website, target: '_blank' },
-						'Go to site'
+						'Website'
 					),
 					_react2.default.createElement(
-						'p',
-						{ id: 'blurb' },
-						this.props.activeInfo.blurb
+						'div',
+						{ className: 'blurb' },
+						_react2.default.createElement(
+							'p',
+							{ id: 'firstsentence' },
+							this.props.activeInfo.firstSentence
+						),
+						_react2.default.createElement(
+							'p',
+							null,
+							this.props.activeInfo.remainingBlurb
+						)
 					)
 				);
 			}
@@ -344,27 +372,112 @@
 	var WheelMenu = function (_React$Component7) {
 		_inherits(WheelMenu, _React$Component7);
 	
-		function WheelMenu() {
+		function WheelMenu(props) {
 			_classCallCheck(this, WheelMenu);
 	
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(WheelMenu).apply(this, arguments));
+			var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(WheelMenu).call(this, props));
+	
+			_this7.state = {
+				moved: false
+			};
+			return _this7;
 		}
+	
+		// Set the current category, trigger the animations for CSS to hide main menu and activate footer menu
 	
 		_createClass(WheelMenu, [{
 			key: 'selectCategory',
 			value: function selectCategory(cat) {
 				this.props.onCategoryChange(cat);
+				this.setState({ moved: true });
 			}
 		}, {
 			key: 'render',
 			value: function render() {
+				// Sublime sees a syntax highlighting error on the <h1> because of the apostrophe, but it compiles correctly
+	
+				// Perform animations by appending a second, new class with animated movement location when a menu item is clicked
+				var menuClass = 'menu';
+				var titleClass = 'menutitle bluetext';
+				var bgClass = 'menubackground';
+	
+				var historyClass = 'menuwrapper menuhistory transition3';
+				var historyText = 'historytext';
+				var historyImage = 'blackimage';
+	
+				var artClass = 'menuwrapper menuart transition2';
+				var artText = 'arttext';
+				var artImage = 'blackimage';
+	
+				var mediaClass = 'menuwrapper menumedia transition1';
+				var mediaText = 'mediatext';
+				var mediaImage = 'blackimage';
+	
+				var topClass = 'menuwrapper menutop transition1';
+				var topText = 'toptext';
+				var topImage = 'blackimage';
+	
+				var militaryClass = 'menuwrapper menumilitary transition2';
+				var militaryText = 'militarytext';
+				var militaryImage = 'blackimage';
+	
+				var scienceClass = 'menuwrapper menuscience transition3';
+				var scienceText = 'sciencetext';
+				var scienceImage = 'blackimage';
+	
+				var category = this.props.currentCategory;
+				switch (category) {
+					case "History":
+						historyImage += ' transparent';
+						break;
+					case "Art":
+						artImage += ' transparent';
+						break;
+					case "Media":
+						mediaImage += ' transparent';
+						break;
+					case "Top Five":
+						topImage += ' transparent';
+						break;
+					case "Military":
+						militaryImage += ' transparent';
+						break;
+					case "Science":
+						scienceImage += ' transparent';
+						break;
+				}
+	
+				if (this.state.moved) {
+					menuClass += ' zindex0';
+					titleClass += ' transparent';
+					bgClass += ' transparent';
+	
+					historyClass += ' historymoved small';
+					historyText += ' bluetext tooltip historytextmoved transparent';
+	
+					artClass += ' artmoved small';
+					artText += ' bluetext tooltip arttextmoved transparent';
+	
+					mediaClass += ' mediamoved small';
+					mediaText += ' bluetext tooltip mediatextmoved transparent';
+	
+					topClass += ' topmoved small';
+					topText += ' bluetext tooltip toptextmoved transparent';
+	
+					militaryClass += ' militarymoved small';
+					militaryText += ' bluetext tooltip militarytextmoved transparent';
+	
+					scienceClass += ' sciencemoved small';
+					scienceText += ' bluetext tooltip sciencetextmoved transparent';
+				}
 	
 				return _react2.default.createElement(
 					'div',
-					{ id: 'menu' },
+					{ className: menuClass },
+					_react2.default.createElement('div', { className: bgClass }),
 					_react2.default.createElement(
 						'h1',
-						{ id: 'menutitle' },
+						{ className: titleClass },
 						'Explore ',
 						_react2.default.createElement(
 							'span',
@@ -373,12 +486,72 @@
 						),
 						' Capital\'s Museums'
 					),
-					_react2.default.createElement('img', { id: 'menuhistory', onClick: this.selectCategory.bind(this, 'History'), src: '../images/menuhistory.png' }),
-					_react2.default.createElement('img', { id: 'menuart', onClick: this.selectCategory.bind(this, 'Art'), src: '../images/menuart.png' }),
-					_react2.default.createElement('img', { id: 'menumedia', onClick: this.selectCategory.bind(this, 'Media'), src: '../images/menumedia.png' }),
-					_react2.default.createElement('img', { id: 'menutop', onClick: this.selectCategory.bind(this, 'Top Five'), src: '../images/menutop.png' }),
-					_react2.default.createElement('img', { id: 'menumilitary', onClick: this.selectCategory.bind(this, 'Military'), src: '../images/menumilitary.png' }),
-					_react2.default.createElement('img', { id: 'menuscience', onClick: this.selectCategory.bind(this, 'Science'), src: '../images/menuscience.png' })
+					_react2.default.createElement(
+						'div',
+						{ className: historyClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuhistory_color.png' }),
+						_react2.default.createElement('img', { className: historyImage, onClick: this.selectCategory.bind(this, 'History'), src: '/images/menuhistory.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: historyText, onClick: this.selectCategory.bind(this, 'History') },
+							'History'
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: artClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuart_color.png' }),
+						_react2.default.createElement('img', { className: artImage, onClick: this.selectCategory.bind(this, 'Art'), src: '/images/menuart.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: artText, onClick: this.selectCategory.bind(this, 'Art') },
+							'Art & Design'
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: mediaClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menumedia_color.png' }),
+						_react2.default.createElement('img', { className: mediaImage, onClick: this.selectCategory.bind(this, 'Media'), src: '/images/menumedia.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: mediaText, onClick: this.selectCategory.bind(this, 'Media') },
+							'Media'
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: topClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menutop_color.png' }),
+						_react2.default.createElement('img', { className: topImage, onClick: this.selectCategory.bind(this, 'Top Five'), src: '/images/menutop.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: topText, onClick: this.selectCategory.bind(this, 'Top Five') },
+							'Top 5'
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: militaryClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menumilitary_color.png' }),
+						_react2.default.createElement('img', { className: militaryImage, onClick: this.selectCategory.bind(this, 'Military'), src: '/images/menumilitary.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: militaryText, onClick: this.selectCategory.bind(this, 'Military') },
+							'Military'
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: scienceClass },
+						_react2.default.createElement('img', { className: 'colorimage', src: '/images/menuscience_color.png' }),
+						_react2.default.createElement('img', { className: scienceImage, onClick: this.selectCategory.bind(this, 'Science'), src: '/images/menuscience.png' }),
+						_react2.default.createElement(
+							'span',
+							{ className: scienceText, onClick: this.selectCategory.bind(this, 'Science') },
+							'Science & Tech'
+						)
+					)
 				);
 			}
 		}]);
@@ -403,7 +576,9 @@
 				currentCategory: null,
 				activeMuseum: null,
 				wikiText: null,
-				activeInfo: {}
+				activeInfo: {},
+				tableActive: false,
+				infoWindowActive: false
 			};
 			return _this8;
 		}
@@ -415,7 +590,7 @@
 			value: function componentDidMount() {
 				var _this9 = this;
 	
-				console.log("mount");
+				console.log("init mount");
 				// Call a nearby Search for Places (museums) in radius around Trafalgar Sq.
 				// Order the results by prominence, then go to callback function
 				// Callback function populates array with place_ids from each Place found
@@ -439,6 +614,10 @@
 							for (var _iterator2 = places[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 								var place = _step2.value;
 	
+								if (place.name === "The Garden Museum") {
+									// Bug; Google returns 'Garden Museum' and 'THE Garden Museum'
+									continue;
+								}
 								if (place.photos) {
 									place['googlephoto'] = place.photos[0].getUrl({ 'maxHeight': 500, 'maxWidth': 500 });
 								}
@@ -530,7 +709,6 @@
 						if (_this9.state.wikiText !== null) {
 							_this9.assignSubCategories();
 						}
-						_this9.getActive();
 					} else {
 						console.log("Error in nearbySearch - Filterlist");
 					}
@@ -559,7 +737,8 @@
 				});
 			}
 	
-			// Selecting a category from menu, update category and refresh museum list with new active museum (1st item)
+			// Selecting a category from menu
+			// update category and refresh museum list with new active museum (1st item fitting category)
 	
 		}, {
 			key: 'setCurrentCategory',
@@ -593,8 +772,7 @@
 					}
 				}
 	
-				this.setState({ currentCategory: category, activeMuseum: newActiveMuseum });
-				this.getActive();
+				this.setState({ currentCategory: category, activeMuseum: newActiveMuseum, tableActive: true, infoWindowActive: true });
 			}
 	
 			// Sets activeMuseum state; passed to each MuseumRow
@@ -605,7 +783,7 @@
 				this.setState({ activeMuseum: museum });
 			}
 	
-			// Get the information for info window
+			// Get the information for info window (wikipedia text & GooglePlaces Details)
 	
 		}, {
 			key: 'getActive',
@@ -679,8 +857,26 @@
 									if (description.indexOf("^") !== -1) {
 										description = description.substr(0, description.indexOf("^"));
 									}
+									var firstSentence = "";
+									var remaining = "";
+									for (var i = 0; i < description.length; i++) {
+										firstSentence += description[i];
+										if (description[i + 1] === '.' && (i + 1 === description.length - 1 || description[i + 2] === " ")) {
+											i++;
+											firstSentence += description[i];
+											i++;
+											while (i < description.length) {
+												remaining += description[i];
+												i++;
+											}
+											remaining = remaining.trim();
+											break;
+										}
+									}
 									var info = this.app.state.activeInfo;
 									info.blurb = description;
+									info.firstSentence = firstSentence;
+									info.remainingBlurb = remaining;
 									this.app.setState({ activeInfo: info });
 								}
 							}
@@ -689,7 +885,7 @@
 				}
 			}
 	
-			//
+			// If initial Wiki lookup leads to redirect page, follow redirect to get actual article
 	
 		}, {
 			key: 'getRedirectWiki',
@@ -927,13 +1123,15 @@
 	
 				return _react2.default.createElement(
 					'div',
-					{ id: 'appwrapper' },
-					_react2.default.createElement(WheelMenu, { onCategoryChange: this.setCurrentCategory.bind(this) }),
+					{ id: 'app' },
+					_react2.default.createElement(WheelMenu, { currentCategory: this.state.currentCategory, onCategoryChange: this.setCurrentCategory.bind(this) }),
 					_react2.default.createElement(
 						'div',
 						{ id: 'maindisplay' },
-						_react2.default.createElement(FilterList, { handleClick: this.setActiveMuseum.bind(this), category: this.state.currentCategory, museums: this.state.museums }),
-						_react2.default.createElement(InfoWindow, { activeInfo: this.state.activeInfo, activeMuseum: this.state.activeMuseum })
+						_react2.default.createElement(FilterList, { activated: this.state.tableActive, handleClick: this.setActiveMuseum.bind(this),
+							category: this.state.currentCategory, activeMuseum: this.state.activeMuseum, museums: this.state.museums }),
+						_react2.default.createElement(InfoWindow, { activated: this.state.infoWindowActive, activeInfo: this.state.activeInfo,
+							activeMuseum: this.state.activeMuseum })
 					)
 				);
 			}

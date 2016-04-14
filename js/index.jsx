@@ -20,8 +20,12 @@ class MuseumRow extends React.Component {
 	}
 
 	render() {
+		var cardClass = "card";
+		if (this.props.isActive) {
+			cardClass += " cardactive"
+		}
 		return (
-			<div id ="card" onClick={this.selectMuseum.bind(this, this.props.museum)}>
+			<div className={cardClass} onClick={this.selectMuseum.bind(this, this.props.museum)}>
 				<img id="tablethumbnail" src={this.props.museum.googlephoto} />
 				<h5>{this.props.museum.name}</h5>
 			</div>
@@ -29,21 +33,28 @@ class MuseumRow extends React.Component {
 	}
 };
 
-// List of museums, composed of rows
+// List of museums, composed of rows of 'cards'
 class MuseumList extends React.Component {
 	render() {
 		let cards = [];
 
 		// React likes it if array elements (like those that end up in lists/tables)
 		// Each have a unique 'key' prop, which here is just a number
+		// ActiveMuseum id needed to trigger CSS for 'active' border
+		var isActiveMuseum = false;
 		for (var museum of this.props.museums) {
-			if (museum.category === this.props.category || (this.props.category === "Top Five" && museum['top5'])) {
-				cards.push(<MuseumRow handleClick={this.props.handleClick.bind(this)} key={museum.id} museum={museum} />);
+			if (this.props.activeMuseum !== null && museum.name === this.props.activeMuseum.name) {
+				isActiveMuseum = true;
 			}
+			if (museum.category === this.props.category || (this.props.category === "Top Five" && museum['top5'])) {
+				cards.push(<MuseumRow isActive={isActiveMuseum} handleClick={this.props.handleClick.bind(this)}
+						key={museum.id} museum={museum} />);
+			}
+			isActiveMuseum = false;
 		}
 		return (
 			<div>
-				<h2 id="tablehead">{this.props.category} Museums</h2>
+				<h2 className="bluetext" id="tablehead">{this.props.category} Museums</h2>
 				<div id="cardlist">{cards}</div>
 			</div>
 		);
@@ -62,19 +73,24 @@ class MuseumFilters extends React.Component {
 	}
 }
 
-// List of museums with toggle-able filters above, only shows those of selected category
+// List of museums; implement simple, toggle-able filters
 class FilterList extends React.Component {
 
 	render() {
+		var tableClass = "museumtable opacitytransition";
+		if (!this.props.activated) {
+			tableClass += " transparent";
+		}
 		return (
-			<div id="museumtable">
-				<MuseumList handleClick={this.props.handleClick.bind(this)} category={this.props.category} museums={this.props.museums} />
+			<div className={tableClass}>
+				<MuseumList handleClick={this.props.handleClick.bind(this)} category={this.props.category} 
+					activeMuseum={this.props.activeMuseum} museums={this.props.museums} />
 			</div>
 		);
 	}
 }
 
-// Google Maps map
+// Google Maps map with Marker on location for active museum
 class ActiveMap extends React.Component {
 
 	componentDidMount() {
@@ -98,6 +114,7 @@ class ActiveMap extends React.Component {
 					lng: this.props.lng,
 				},
 				zoom: 15,
+				mapTypeControl: false,
 			};
 			var constructedMap = new google.maps.Map(node, mapObj);
 			var mapMarker = new google.maps.Marker({
@@ -113,12 +130,12 @@ class ActiveMap extends React.Component {
 	}
 }
 
-// Primary window for displaying a museum's information
+// Primary window for displaying a museum's information (map and wikipedia text)
 // Props is an activeMuseum, determined by clicking on a table item
-// <ActiveMap coordinates={this.props.activeInfo.coordinates} />
 class InfoWindow extends React.Component {
 
 	render() {
+		var windowClass = "infowindow opacitytransition";
 		var lat = 51.5081;
 		var lng = -0.1281;
 		var picurl = ""
@@ -132,16 +149,18 @@ class InfoWindow extends React.Component {
 		if (this.props.activeMuseum !== null) {
 			picurl = this.props.activeMuseum.googlephoto;
 		}
-
+		if (!this.props.activated) {
+			windowClass += " transparent";
+		}
 		return (
-			<div id="infowindow">
-				<h1>{this.props.activeInfo.name}</h1>
+			<div className={windowClass}>
+				<h1 className='bluetext'>{this.props.activeInfo.name}</h1>
 				<div id="imagewrapper">
 					<img id="profilepic" src={picurl} />
 					<ActiveMap lat={lat} lng={lng} markerLocation={markerLocation}/>
 				</div>
-				<a id="museumsitebutton" href={this.props.activeInfo.website} target="_blank">Go to site</a>
-				<p id="blurb">{this.props.activeInfo.blurb}</p>
+				<a id="museumsitebutton" href={this.props.activeInfo.website} target="_blank">Website</a>
+				<div className="blurb"><p id="firstsentence">{this.props.activeInfo.firstSentence}</p><p>{this.props.activeInfo.remainingBlurb}</p></div>
 			</div>
 		);
 	}
@@ -150,27 +169,137 @@ class InfoWindow extends React.Component {
 // Six-icon menu to select/set museum category; 'landing page' of app
 class WheelMenu extends React.Component {
 
+	constructor(props) {
+		super(props);
+		this.state = {
+			moved: false,
+		};
+	}
+
+	// Set the current category, trigger the animations for CSS to hide main menu and activate footer menu
 	selectCategory(cat) {
 		this.props.onCategoryChange(cat);
+		this.setState({moved: true});
 	}
 
 	render() {
 		// Sublime sees a syntax highlighting error on the <h1> because of the apostrophe, but it compiles correctly
+
+		// Perform animations by appending a second, new class with animated movement location when a menu item is clicked
+		var menuClass = 'menu';
+		var titleClass = 'menutitle bluetext';
+		var bgClass = 'menubackground';
+
+		var historyClass = 'menuwrapper menuhistory transition3';
+		var historyText = 'historytext';
+		var historyImage = 'blackimage';
+
+		var artClass = 'menuwrapper menuart transition2';
+		var artText = 'arttext';
+		var artImage = 'blackimage';
+
+		var mediaClass = 'menuwrapper menumedia transition1';
+		var mediaText = 'mediatext';
+		var mediaImage = 'blackimage';
+
+		var topClass = 'menuwrapper menutop transition1';
+		var topText = 'toptext';
+		var topImage = 'blackimage';
+
+		var militaryClass = 'menuwrapper menumilitary transition2';
+		var militaryText = 'militarytext'
+		var militaryImage = 'blackimage';
+
+		var scienceClass = 'menuwrapper menuscience transition3'
+		var scienceText = 'sciencetext';
+		var scienceImage = 'blackimage';
+
+		var category = this.props.currentCategory;
+		switch(category) {
+			case "History":
+				historyImage += ' transparent';
+				break;
+			case "Art":
+				artImage += ' transparent';
+				break;
+			case "Media":
+				mediaImage += ' transparent';
+				break;
+			case "Top Five":
+				topImage += ' transparent';
+				break;
+			case "Military":
+				militaryImage += ' transparent'
+				break;
+			case "Science":
+				scienceImage += ' transparent';
+				break;
+		}
+
+		if (this.state.moved) {
+			menuClass += ' zindex0';
+			titleClass += ' transparent';
+			bgClass += ' transparent';
+
+			historyClass += ' historymoved small';
+			historyText += ' bluetext tooltip historytextmoved transparent';
+
+			artClass += ' artmoved small';
+			artText += ' bluetext tooltip arttextmoved transparent';
+
+			mediaClass += ' mediamoved small';
+			mediaText += ' bluetext tooltip mediatextmoved transparent';
+
+			topClass += ' topmoved small';
+			topText += ' bluetext tooltip toptextmoved transparent';
+
+			militaryClass += ' militarymoved small';
+			militaryText += ' bluetext tooltip militarytextmoved transparent';
+
+			scienceClass += ' sciencemoved small';
+			scienceText += ' bluetext tooltip sciencetextmoved transparent';
+		}
+
 		return (
-			<div id="menu">
-				<h1 id="menutitle">Explore <span id="the">the</span> Capital's Museums</h1>
+			<div className={menuClass}>
+				<div className={bgClass}></div>
+				<h1 className={titleClass}>Explore <span id="the">the</span> Capital's Museums</h1>
 				
-				<img id="menuhistory" onClick={this.selectCategory.bind(this, 'History')} src="../images/menuhistory.png" />
+				<div className={historyClass}>
+					<img className="colorimage" src="/images/menuhistory_color.png" />
+					<img className={historyImage} onClick={this.selectCategory.bind(this, 'History')} src="/images/menuhistory.png" />
+					<span className={historyText} onClick={this.selectCategory.bind(this, 'History')}>History</span>
+				</div>
 
-				<img id="menuart" onClick={this.selectCategory.bind(this, 'Art')} src="../images/menuart.png" />
+				<div className={artClass}>
+					<img className="colorimage" src="/images/menuart_color.png" />
+					<img className={artImage} onClick={this.selectCategory.bind(this, 'Art')} src="/images/menuart.png" />
+					<span className={artText} onClick={this.selectCategory.bind(this, 'Art')}>Art & Design</span>
+				</div>
 
-				<img id="menumedia" onClick={this.selectCategory.bind(this, 'Media')} src="../images/menumedia.png" />
+				<div className={mediaClass}>
+					<img className="colorimage" src="/images/menumedia_color.png" />
+					<img className={mediaImage} onClick={this.selectCategory.bind(this, 'Media')} src="/images/menumedia.png" />
+					<span className={mediaText} onClick={this.selectCategory.bind(this, 'Media')}>Media</span>
+				</div>
 
-				<img id="menutop" onClick={this.selectCategory.bind(this, 'Top Five')} src="../images/menutop.png" />
+				<div className={topClass}>
+					<img className="colorimage" src="/images/menutop_color.png" />
+					<img className={topImage} onClick={this.selectCategory.bind(this, 'Top Five')} src="/images/menutop.png" />
+					<span className={topText} onClick={this.selectCategory.bind(this, 'Top Five')}>Top 5</span>
+				</div>
 
-				<img id="menumilitary" onClick={this.selectCategory.bind(this, 'Military')} src="../images/menumilitary.png" />
+				<div className={militaryClass}>
+					<img className="colorimage" src="/images/menumilitary_color.png" />
+					<img className={militaryImage} onClick={this.selectCategory.bind(this, 'Military')} src="/images/menumilitary.png" />
+					<span className={militaryText} onClick={this.selectCategory.bind(this, 'Military')}>Military</span>
+				</div>
 
-				<img id="menuscience" onClick={this.selectCategory.bind(this, 'Science')} src="../images/menuscience.png" />
+				<div className={scienceClass}>
+					<img className="colorimage" src="/images/menuscience_color.png" />
+					<img className={scienceImage} onClick={this.selectCategory.bind(this, 'Science')} src="/images/menuscience.png" />
+					<span className={scienceText} onClick={this.selectCategory.bind(this, 'Science')}>Science & Tech</span>
+				</div>
 			</div>
 		);
 	}
@@ -188,12 +317,14 @@ class MuseumApp extends React.Component {
 			activeMuseum: null,
 			wikiText: null,
 			activeInfo: {},
+			tableActive: false,
+			infoWindowActive: false,
 		}
 	}
 
 	// Triggers initial AJAX requests; gets museum Places and Wikipedia list of museums
 	componentDidMount() {
-		console.log("mount");
+		console.log("init mount");
 		// Call a nearby Search for Places (museums) in radius around Trafalgar Sq.
 		// Order the results by prominence, then go to callback function
 		// Callback function populates array with place_ids from each Place found
@@ -211,6 +342,9 @@ class MuseumApp extends React.Component {
 			(places, status, pagination) => {
 				if (status === google.maps.places.PlacesServiceStatus.OK) {
 					for (var place of places) {
+						if (place.name === "The Garden Museum") { // Bug; Google returns 'Garden Museum' and 'THE Garden Museum'
+							continue;
+						}
 						if (place.photos) {
 							place['googlephoto'] = place.photos[0].getUrl({'maxHeight': 500, 'maxWidth': 500});
 						}
@@ -250,7 +384,6 @@ class MuseumApp extends React.Component {
 					if (this.state.wikiText !== null) {
 						this.assignSubCategories();
 					}
-					this.getActive();
 				} else {
 						console.log("Error in nearbySearch - Filterlist");
 				}
@@ -279,7 +412,8 @@ class MuseumApp extends React.Component {
 		});
 	}
 
-	// Selecting a category from menu, update category and refresh museum list with new active museum (1st item)
+	// Selecting a category from menu
+	// update category and refresh museum list with new active museum (1st item fitting category)
 	setCurrentCategory(category) {
 		var newActiveMuseum = null;
 		for (var museum of this.state.museums) {
@@ -288,8 +422,7 @@ class MuseumApp extends React.Component {
 				break;
 			}
 		}
-		this.setState({currentCategory: category, activeMuseum: newActiveMuseum});
-		this.getActive();
+		this.setState({currentCategory: category, activeMuseum: newActiveMuseum, tableActive: true, infoWindowActive: true});
 	}
 
 	// Sets activeMuseum state; passed to each MuseumRow
@@ -297,7 +430,7 @@ class MuseumApp extends React.Component {
 		this.setState({activeMuseum: museum});
 	}
 
-	// Get the information for info window
+	// Get the information for info window (wikipedia text & GooglePlaces Details)
 	getActive() {
 		this.getActiveDetails();
 		this.getActiveWiki();
@@ -368,8 +501,26 @@ class MuseumApp extends React.Component {
 							if (description.indexOf("^") !== -1) {
 								description = description.substr(0, description.indexOf("^"));
 							}
+							var firstSentence = "";
+							var remaining = "";
+							for (var i = 0; i < description.length; i++) {
+								firstSentence += description[i];
+								if (description[i+1] === '.' && (i+1 === (description.length-1) || description[i+2] === " ")) {
+									i++;
+									firstSentence += description[i];
+									i++;
+									while (i < description.length) {
+										remaining += description[i];
+										i++;
+									}
+									remaining = remaining.trim();
+									break;
+								}
+							}
 							var info = this.app.state.activeInfo;
 							info.blurb= description;
+							info.firstSentence = firstSentence;
+							info.remainingBlurb = remaining;
 							this.app.setState({activeInfo: info});
 						}
 					}
@@ -378,7 +529,7 @@ class MuseumApp extends React.Component {
 		}
 	}
 
-	//
+	// If initial Wiki lookup leads to redirect page, follow redirect to get actual article
 	getRedirectWiki() {
 		$.ajax ({
 				type: "GET",
@@ -523,11 +674,13 @@ class MuseumApp extends React.Component {
 		}
 
 		return (
-			<div id="appwrapper">
-				<WheelMenu onCategoryChange={this.setCurrentCategory.bind(this)} />
+			<div id="app">
+				<WheelMenu currentCategory={this.state.currentCategory} onCategoryChange={this.setCurrentCategory.bind(this)} />
 				<div id="maindisplay">
-					<FilterList handleClick={this.setActiveMuseum.bind(this)} category={this.state.currentCategory} museums={this.state.museums} />
-					<InfoWindow activeInfo={this.state.activeInfo} activeMuseum={this.state.activeMuseum} />
+					<FilterList activated={this.state.tableActive} handleClick={this.setActiveMuseum.bind(this)}
+						category={this.state.currentCategory} activeMuseum={this.state.activeMuseum} museums={this.state.museums} />
+					<InfoWindow activated={this.state.infoWindowActive} activeInfo={this.state.activeInfo}
+						activeMuseum={this.state.activeMuseum} />
 				</div>
 			</div>
 		);
