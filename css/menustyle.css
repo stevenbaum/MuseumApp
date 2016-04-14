@@ -1,0 +1,247 @@
+.menu {
+	justify-content: center;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin-top: 0;
+	height: 100vh;
+	min-height: 400px;
+	max-height: 1000px;
+	width: 95vh;
+	min-width: 400px;
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	z-index: 1;
+}
+
+.menubackground {
+	position: absolute;
+	top: 35%;
+	left: 37%;
+    width: 26.5%;
+    height: 28.3%;
+    background-color: rgba(240, 248, 255, 0.91);
+    -webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+
+.zindex0 {
+	z-index: -1;
+}
+
+.transparent {
+	opacity: 0;
+}
+
+.menutitle {
+	top: 31%;
+	left: 38%;
+	width: 2%;
+	line-height: 140%;
+	font-size: 5.2vh;
+	position: absolute;
+	-webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+
+.transition1 {
+	-webkit-transition: all 0.9s cubic-bezier(0.86, 0, 0.07, 1);
+	transition: all 0.9s cubic-bezier(0.86, 0, 0.07, 1);	
+}
+
+.transition2 {
+	-webkit-transition: all 1.5s cubic-bezier(0.86, 0, 0.07, 1);
+	transition: all 1.5s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.transition3 {
+	-webkit-transition: all 2.1s cubic-bezier(0.86, 0, 0.07, 1);
+	transition: all 2.1s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.colorimage {
+	position: absolute;
+	z-index: -1;
+}
+
+.blackimage {
+	transition: opacity 0.3s;
+}
+
+.menuwrapper:hover .blackimage {
+	opacity: 0;
+}
+
+.menuwrapper {
+	position: absolute;
+	width: 30%;
+	max-width: 336px;
+}
+
+.menuwrapper > img {
+	width: 100%;
+}
+
+.menuwrapper > span {
+	position: absolute;
+	line-height: 100%;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.menuwrapper:hover .tooltip {
+	opacity: 1;
+}
+
+.tooltip {
+	padding: 1px;
+	background-color: rgba(230, 234, 251, 1);
+	-webkit-transition: opacity 0.3s;
+	transition: opacity 0.3s;
+}
+
+/* CSS for moving menu images & text
+	Each menu item has 2 specifiers for animating image & text respectively (4 total) */
+.menuhistory {
+	top: 2%;
+	width: 30%;
+	left: 55.5%;
+}
+
+.historymoved {
+	top: 87vh;
+	left: 82%;
+}
+
+.historytext {
+	font-size: 2.9vh;
+	top: 22.2vh;
+	left: 32.5%;
+}
+
+.historytextmoved {
+	top: 73%;
+	left: 7%;
+}
+
+.menuart {
+	top: 35%;
+	width: 30%;
+	left: 0%;
+}
+
+.artmoved {
+	top: 87vh;
+	left: 21%;
+}
+
+.arttext {
+	left: 21.35%;
+	top: 22.2vh;
+	font-size: 2.7vh;
+}
+
+.arttextmoved {
+	top: 72%;
+	left: -20%;
+}
+
+.menumedia {
+	top: 67%;
+	left: 55.5%;	
+}
+
+.mediamoved {
+	top: 87vh;
+	left: 52%;
+}
+
+.mediatext {
+	top: 23vh;
+	left: 35.3%;
+	font-size: 2.9vh;
+}
+
+.mediatextmoved {
+	top: 76%;
+	left: 13.5%;
+}
+
+.menutop {
+	top: 67%;
+	width: 30%;
+	left: 15%;
+}
+
+.topmoved {
+	top: 87vh;
+	left: 36%;
+}
+
+.toptext {
+	top: 23vh;
+	font-size: 3vh;
+	left: 36.5%;
+}
+
+.toptextmoved {
+	top: 72%;
+	left: 17%;
+}
+
+.menumilitary {
+	top: 35%;
+	width: 30%;
+	left: 70%;	
+}
+
+.militarymoved {
+	top: 87vh;
+	left: 67%;
+}
+
+.militarytext {
+	top: 22.2vh;
+	font-size: 2.9vh;
+	left: 31%;
+}
+
+.militarytextmoved {
+	top: 74%;
+	left: 4%;
+}
+
+.menuscience {
+	top: 2%;
+	width: 30%;
+	left: 15%;	
+}
+
+.sciencemoved {
+	top: 87vh;
+	left: 6%;
+}
+
+.sciencetext {
+	font-size: 2.5vh;
+	top: 22.2vh;
+	left: 18.5%;
+}
+
+.sciencetextmoved {
+	top: 73%;
+	left: -27%;
+}
+
+.small {
+	width: 12vh;
+}
+
+.menuwrapper:hover,
+.menuwrapper > span:hover,
+.card:hover {
+	cursor: pointer;
+}
