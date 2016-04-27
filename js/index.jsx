@@ -219,7 +219,7 @@ class WheelMenu extends React.Component {
 			case "History":
 				historyImage += ' transparent';
 				break;
-			case "Art":
+			case "Art & Design":
 				artImage += ' transparent';
 				break;
 			case "Media":
@@ -231,7 +231,7 @@ class WheelMenu extends React.Component {
 			case "Military":
 				militaryImage += ' transparent'
 				break;
-			case "Science":
+			case "Science & Tech":
 				scienceImage += ' transparent';
 				break;
 		}
@@ -273,8 +273,8 @@ class WheelMenu extends React.Component {
 
 				<div className={artClass}>
 					<img className="colorimage" src="images/menuart_color.png" />
-					<img className={artImage} onClick={this.selectCategory.bind(this, 'Art')} src="images/menuart.png" />
-					<span className={artText} onClick={this.selectCategory.bind(this, 'Art')}>Art & Design</span>
+					<img className={artImage} onClick={this.selectCategory.bind(this, 'Art & Design')} src="images/menuart.png" />
+					<span className={artText} onClick={this.selectCategory.bind(this, 'Art & Design')}>Art & Design</span>
 				</div>
 
 				<div className={mediaClass}>
@@ -297,8 +297,8 @@ class WheelMenu extends React.Component {
 
 				<div className={scienceClass}>
 					<img className="colorimage" src="images/menuscience_color.png" />
-					<img className={scienceImage} onClick={this.selectCategory.bind(this, 'Science')} src="images/menuscience.png" />
-					<span className={scienceText} onClick={this.selectCategory.bind(this, 'Science')}>Science & Tech</span>
+					<img className={scienceImage} onClick={this.selectCategory.bind(this, 'Science & Tech')} src="images/menuscience.png" />
+					<span className={scienceText} onClick={this.selectCategory.bind(this, 'Science & Tech')}>Science & Tech</span>
 				</div>
 			</div>
 		);
@@ -369,9 +369,9 @@ class MuseumApp extends React.Component {
 						for (var museum of placeResults) {
 							if ((museum.name === "The British Museum" && (this.state.currentCategory === "History" 
 																		|| this.state.currentCategory === "Top Five")) ||
-								(museum.name === "The National Gallery" && this.state.currentCategory === "Art") ||
+								(museum.name === "The National Gallery" && this.state.currentCategory === "Art & Design") ||
 								(museum.name === "Churchill War Rooms" && this.state.currentCategory === "Military") ||
-								(museum.name === "Science Museum" && this.state.currentCategory === "Science")) 
+								(museum.name === "Science Museum" && this.state.currentCategory === "Science & Tech")) 
 							{
 								currentMuseum = museum;
 							}
@@ -574,7 +574,7 @@ class MuseumApp extends React.Component {
 				museum['top5'] = false;
 			}
 			if (museum.name === "Victoria and Albert Museum") { // Niche case; more art than history
-				museum['category'] = "Art";
+				museum['category'] = "Art & Design";
 				categorizedMuseums.push(museum);
 				continue;
 			}
@@ -690,10 +690,10 @@ class MuseumApp extends React.Component {
 // Manual Grouping of categories by keywords from Wiki
 var categories = {
 	History: ['History', 'Historic house', 'Local', 'Ethnic', 'Living', 'Biographical', 'Archaeology', 'Numismatic', 'Library', 'Multiple', 'Prison', 'Gardening'],
-	Art: ['Art', 'Contemporary art', 'Design', 'Fashion'],
+	'Art & Design': ['Art', 'Contemporary art', 'Design', 'Fashion'],
 	Media: ['Media', 'Film', 'Cinema', 'Theatre', 'Theater', 'Comedy', 'Magic', 'Music', 'Sports', 'Wax'],
 	Military: ['War', 'Military', 'Maritime', 'Aviation'],
-	Science: ['Science', 'Technology', 'Transportation', 'Natural history', 'Medical'],
+	'Science & Tech': ['Science', 'Technology', 'Transportation', 'Natural history', 'Medical'],
 };
 
 // And-a-one, and-a-two, and away we go~

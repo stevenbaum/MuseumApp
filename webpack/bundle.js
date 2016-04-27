@@ -430,7 +430,7 @@
 					case "History":
 						historyImage += ' transparent';
 						break;
-					case "Art":
+					case "Art & Design":
 						artImage += ' transparent';
 						break;
 					case "Media":
@@ -442,7 +442,7 @@
 					case "Military":
 						militaryImage += ' transparent';
 						break;
-					case "Science":
+					case "Science & Tech":
 						scienceImage += ' transparent';
 						break;
 				}
@@ -501,10 +501,10 @@
 						'div',
 						{ className: artClass },
 						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menuart_color.png' }),
-						_react2.default.createElement('img', { className: artImage, onClick: this.selectCategory.bind(this, 'Art'), src: 'images/menuart.png' }),
+						_react2.default.createElement('img', { className: artImage, onClick: this.selectCategory.bind(this, 'Art & Design'), src: 'images/menuart.png' }),
 						_react2.default.createElement(
 							'span',
-							{ className: artText, onClick: this.selectCategory.bind(this, 'Art') },
+							{ className: artText, onClick: this.selectCategory.bind(this, 'Art & Design') },
 							'Art & Design'
 						)
 					),
@@ -545,10 +545,10 @@
 						'div',
 						{ className: scienceClass },
 						_react2.default.createElement('img', { className: 'colorimage', src: 'images/menuscience_color.png' }),
-						_react2.default.createElement('img', { className: scienceImage, onClick: this.selectCategory.bind(this, 'Science'), src: 'images/menuscience.png' }),
+						_react2.default.createElement('img', { className: scienceImage, onClick: this.selectCategory.bind(this, 'Science & Tech'), src: 'images/menuscience.png' }),
 						_react2.default.createElement(
 							'span',
-							{ className: scienceText, onClick: this.selectCategory.bind(this, 'Science') },
+							{ className: scienceText, onClick: this.selectCategory.bind(this, 'Science & Tech') },
 							'Science & Tech'
 						)
 					)
@@ -683,7 +683,7 @@
 								for (var _iterator4 = placeResults[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
 									var museum = _step4.value;
 	
-									if (museum.name === "The British Museum" && (_this9.state.currentCategory === "History" || _this9.state.currentCategory === "Top Five") || museum.name === "The National Gallery" && _this9.state.currentCategory === "Art" || museum.name === "Churchill War Rooms" && _this9.state.currentCategory === "Military" || museum.name === "Science Museum" && _this9.state.currentCategory === "Science") {
+									if (museum.name === "The British Museum" && (_this9.state.currentCategory === "History" || _this9.state.currentCategory === "Top Five") || museum.name === "The National Gallery" && _this9.state.currentCategory === "Art & Design" || museum.name === "Churchill War Rooms" && _this9.state.currentCategory === "Military" || museum.name === "Science Museum" && _this9.state.currentCategory === "Science & Tech") {
 										currentMuseum = museum;
 									}
 								}
@@ -943,7 +943,7 @@
 						}
 						if (museum.name === "Victoria and Albert Museum") {
 							// Niche case; more art than history
-							museum['category'] = "Art";
+							museum['category'] = "Art & Design";
 							categorizedMuseums.push(museum);
 							continue;
 						}
@@ -1144,10 +1144,10 @@
 	
 	var categories = {
 		History: ['History', 'Historic house', 'Local', 'Ethnic', 'Living', 'Biographical', 'Archaeology', 'Numismatic', 'Library', 'Multiple', 'Prison', 'Gardening'],
-		Art: ['Art', 'Contemporary art', 'Design', 'Fashion'],
+		'Art & Design': ['Art', 'Contemporary art', 'Design', 'Fashion'],
 		Media: ['Media', 'Film', 'Cinema', 'Theatre', 'Theater', 'Comedy', 'Magic', 'Music', 'Sports', 'Wax'],
 		Military: ['War', 'Military', 'Maritime', 'Aviation'],
-		Science: ['Science', 'Technology', 'Transportation', 'Natural history', 'Medical']
+		'Science & Tech': ['Science', 'Technology', 'Transportation', 'Natural history', 'Medical']
 	};
 	
 	// And-a-one, and-a-two, and away we go~

@@ -107,7 +107,7 @@ body {
 
 #profilepic {
 	width: 100%;
-	min-height: 36vh;
+	min-height: 34vh;
 	margin-bottom: 2vh;
 	max-height: 36vh;
 }
@@ -154,6 +154,7 @@ body {
 	overflow: auto;
 	max-height: 63vh;
 	padding: 15px;
+	margin-top: 15px;
 }
 
 #firstsentence {
@@ -162,8 +163,33 @@ body {
 	font-size: 1.05em;
 	padding: 9px;
 	text-align: center;
+	margin-top: 0;
 }
 
 .bluetext {
 	color: #010027;
+}
+
+@media (max-width: 1050px) {
+	#app {
+		width: 95%;
+	}
+
+	.museumtable {
+		min-width: 355px;
+	}
+}
+
+@media (max-width: 775px) {
+	#app {
+		width: 97%;
+	}
+
+	.infowindow {
+		margin-left: 15px;
+	}
+
+	.museumtable {
+		min-width: 188px;
+	}
 }
