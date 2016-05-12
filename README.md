@@ -1,9 +1,11 @@
-# MuseumApp
+# The London Museum Explorer
 A React-based web application for navigating London's many museums, with features including:
 * Filtering of museums across five categories
 * Embedded Google Maps display with London Underground reference points
 * Access to individual museum websites to access current events and exhibitions
 * Brief, informative text pulled from relevant Wikipedia pages
+
+[Live Version]: http://www.stevenmbaum.com/MuseumApp/
 
 ###Implementation
 The bulk of the application derives from two client-side processes initiated upon loading the page - cross-domain AJAX calls to the Google Places and Wikipedia APIs. 
